@@ -79,7 +79,7 @@ public class Game {
 	public static void main(String args[]){
 		
 		// need to modify for your own location
-		Scene initialscene = new Scene("testcase/testcase1.txt");
+		Scene initialscene = new Scene("testcase/testcase3.txt");
 		Game g = new Game(initialscene);
 		AshAI ashAI = new AshAI();
 		g.run(ashAI);
