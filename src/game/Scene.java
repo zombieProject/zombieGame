@@ -151,26 +151,24 @@ public class Scene {
 			
 		}
 	}
+
 	
 	private void move(Agent a, int x, int y){
-		if(a.isAsh()){
-			if(distance(a.getX(),a.getY(),x,y) <= ASH_LIMIT){
-				a.setDestination(x, y);
-			}
-			else {
-				double offsetx = offsetX(ASH_LIMIT,a.getX(),a.getY(),x,y);
-				double offsety = offsetY(ASH_LIMIT,a.getX(),a.getY(),x,y);
-				a.setDestination((int)offsetx+a.getX(), (int)offsety+a.getY());
-				
-			}
-		}else{
-			if(distance(a.getX(),a.getY(),x,y) <= ZOMBIE_LIMIT){
-				a.setDestination(x, y);	
-		}else{
+
+		int limit;
+
+		if(a.isAsh()) {
+			limit = ASH_LIMIT;
+		} else {
+			limit = ZOMBIE_LIMIT;
+		}
+
+		if(distance(a.getX(),a.getY(),x,y) < limit) {
+			a.setDestination(x, y);
+		} else {
 			double offsetx = offsetX(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
 			double offsety = offsetY(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
 			a.setDestination((int)offsetx+a.getX(), (int)offsety+a.getY());
-			}
 		}
 	}
 	
