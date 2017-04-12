@@ -7,6 +7,7 @@ import agent.Ash;
 import agent.Human;
 import agent.Zombie;
 import ai.AshAI;
+import ui.RootUI;
 
 public class Game {
 //	The game is played in a zone 16000 units wide by 9000 units high. You control a man named Ash, wielding a gun that lets him kill any zombie within a certain range around him.
@@ -79,10 +80,12 @@ public class Game {
 	public static void main(String args[]){
 		
 		// need to modify for your own location
-		Scene initialscene = new Scene("testcase/testcase1.txt");
+		Scene initialscene = new Scene("testcase/testcase3.txt");
 		Game g = new Game(initialscene);
 		AshAI ashAI = new AshAI();
 		g.run(ashAI);
+		
+		RootUI.createGUI(g.scenelist);
 	}
 
 	

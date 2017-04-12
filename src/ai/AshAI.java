@@ -9,7 +9,8 @@ public class AshAI {
 	public String move(List<Integer> input){
 		
 		
-		return "0 0";
+		//return "8250 4500"; // for test 1
+		return "8800 7000";   // for test 3
 		
 	}
 

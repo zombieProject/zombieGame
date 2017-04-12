@@ -8,6 +8,11 @@ public class Zombie extends Agent {
 //		live = true;
 	}
 	
+	public Zombie(Zombie z){
+		this.x = z.x;
+		this.y = z.y;
+	}
+	
 	public void killed(){
 //		live = false;
 	}

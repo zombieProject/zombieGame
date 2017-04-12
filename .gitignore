@@ -150,7 +150,11 @@ flycheck_*.el
 .projectile
 
 # class
->>>>>>> 8e19d7546c4dcd59af5b0830db4bd7f9556a7dfc
 *.class
 
 *.out
+/bin/
+/.idea
+/.classpath
+.project
+*.iml
