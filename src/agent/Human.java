@@ -8,6 +8,11 @@ public class Human extends Agent {
 //		live = true;
 	}
 	
+	public Human(Human h){
+		this.x = h.x;
+		this.y = h.y;
+	}
+	
 	public void killed(){
 //		live = false;
 	}

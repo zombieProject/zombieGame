@@ -18,8 +18,8 @@ import agent.Zombie;
 public class Scene {
 	private static final int LEFT = 0;
 	private static final int TOP = 0;
-	private static final int RIGHT = 16000;
-	private static final int DOWN = 9000;
+	public static final int RIGHT = 16000;
+	public static final int DOWN = 9000;
 	private static final int ZOMBIE_LIMIT = 400;
 	private static final int ASH_LIMIT = 1000;
 	private static final int SHOOTING_RANGE = 2000;
@@ -59,9 +59,23 @@ public class Scene {
 	Scene(Scene s){
 		score = s.score;
 		ash = new Ash(s.getAsh());
-		zombielist = new HashMap<Integer,Zombie> (s.getZombieNextlist());
-		zombienextlist = new HashMap<Integer,Zombie> (s.getZombieNextlist());
-		humanlist = new HashMap<Integer,Human>(s.getHumanlist());
+		
+		zombielist = new HashMap<Integer,Zombie> ();
+		zombienextlist = new HashMap<Integer,Zombie> ();
+		humanlist = new HashMap<Integer,Human> ();
+		
+		for (Map.Entry<Integer, Zombie> entry : s.getZombieNextlist().entrySet()){
+			zombielist.put(entry.getKey(), new Zombie(entry.getValue()));
+		}
+		
+		for (Map.Entry<Integer, Zombie> entry : s.getZombieNextlist().entrySet()){
+			zombienextlist.put(entry.getKey(), new Zombie(entry.getValue()));
+		}
+		
+		for (Map.Entry<Integer, Human> entry : s.getHumanlist().entrySet()){
+			humanlist.put(entry.getKey(), new Human(entry.getValue()));
+		}
+		
 		status = s.getStatus();
 		
 		
