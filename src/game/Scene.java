@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import agent.Agent;
@@ -55,7 +57,7 @@ public class Scene {
 	}
 	
 	Scene(Scene s){
-		score = score;
+		score = s.score;
 		ash = new Ash(s.getAsh());
 		zombielist = new HashMap<Integer,Zombie> (s.getZombieNextlist());
 		zombienextlist = new HashMap<Integer,Zombie> (s.getZombieNextlist());
@@ -109,9 +111,9 @@ public class Scene {
 		return status;
 	}
 	
-	public void nextScene(){
+	public void nextScene(String ashmove){
 		zombieMove();
-		ashMove();
+		ashMove(ashmove);
 		ashKillZombie();
 		zombieKillHuman();
 		if(zombienextlist.isEmpty()){
@@ -119,6 +121,31 @@ public class Scene {
 		}else if(humanlist.isEmpty()){
 			status = "fail";
 		}
+	}
+	
+	public List<Integer> outGameSequence(){
+		List<Integer> sequence = new ArrayList<Integer>();
+		//add ash
+		sequence.add(ash.getX());
+		sequence.add(ash.getY());
+		//add human
+		sequence.add(humanlist.size());
+		for (Map.Entry<Integer, Human> entry : humanlist.entrySet()){
+			sequence.add(entry.getKey());
+			sequence.add(entry.getValue().getX());
+			sequence.add(entry.getValue().getY());
+		}		
+		//add zombie
+		sequence.add(zombielist.size());
+		for (Map.Entry<Integer, Zombie> entry : zombielist.entrySet()){
+			sequence.add(entry.getKey());
+			sequence.add(entry.getValue().getX());
+			sequence.add(entry.getValue().getY());
+			sequence.add(zombienextlist.get(entry.getKey()).getX());
+			sequence.add(zombienextlist.get(entry.getKey()).getY());
+			}
+		
+		return sequence;
 	}
 	
 
@@ -139,7 +166,10 @@ public class Scene {
 	}
 	
 	
-	private void ashMove(){
+	private void ashMove(String move){
+		String[] m = move.split("\\s+");
+		this.ash.setX(Integer.parseInt(m[0]));
+		this.ash.setY(Integer.parseInt(m[1]));
 
 	}
 	
@@ -151,10 +181,28 @@ public class Scene {
 			
 		}
 	}
-
 	
 	private void move(Agent a, int x, int y){
-
+//		if(a.isAsh()){
+//			if(distance(a.getX(),a.getY(),x,y) <= ASH_LIMIT){
+//				a.setDestination(x, y);
+//			}
+//			else {
+//				double offsetx = offsetX(ASH_LIMIT,a.getX(),a.getY(),x,y);
+//				double offsety = offsetY(ASH_LIMIT,a.getX(),a.getY(),x,y);
+//				a.setDestination((int)offsetx+a.getX(), (int)offsety+a.getY());
+//				
+//			}
+//		}else{
+//			if(distance(a.getX(),a.getY(),x,y) <= ZOMBIE_LIMIT){
+//				a.setDestination(x, y);	
+//		}else{
+//			double offsetx = offsetX(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
+//			double offsety = offsetY(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
+//			a.setDestination((int)offsetx+a.getX(), (int)offsety+a.getY());
+//			}
+//		}
+		
 		int limit;
 
 		if(a.isAsh()) {
@@ -188,14 +236,15 @@ public class Scene {
 	private void ashKillZombie(){
 		int killcount = 0;
 		Map<Integer, Zombie> copyzombienextlist = new HashMap<Integer,Zombie>(zombienextlist);
-		
+		int addScore = 0;
 		for (Map.Entry<Integer, Zombie> entry : copyzombienextlist.entrySet()){
 			if(distance(ash.getX(),ash.getY(),entry.getValue().getX(),entry.getValue().getY())<=SHOOTING_RANGE){
 				zombienextlist.remove(entry.getKey());
 				killcount+=1;
-				score += killcount*fibonacci(killcount);
+				addScore += killcount*fibonacci(killcount);
 			}		
 		}
+		score += addScore*humanlist.size();
 	}
 	
 	private void zombieKillHuman(){
@@ -220,6 +269,7 @@ public class Scene {
 		}
 		else return fibonacci(n-1)+fibonacci(n-2);
 	}
+	
 	
 	
 	
