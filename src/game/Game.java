@@ -61,11 +61,11 @@ public class Game {
 	}
 	
 	
-	public void run(){
+	public void run(AshAI ash){
 		while(scenelist.get(scenelist.size()-1).getStatus().equals("ongoing"))
 		{
 			Scene nextscene = new Scene(scenelist.get(scenelist.size()-1));
-			nextscene.nextScene();
+			nextscene.nextScene(ash.move(nextscene.outGameSequence()));
 			scenelist.add(nextscene);
 		}
 		
@@ -79,9 +79,10 @@ public class Game {
 	public static void main(String args[]){
 		
 		// need to modify for your own location
-		Scene initialscene = new Scene("E:/Northeastern University/CS5150 Game AI/Project/ZombieGame/testcase/testcase1.txt");
+		Scene initialscene = new Scene("testcase/testcase1.txt");
 		Game g = new Game(initialscene);
-		g.run();
+		AshAI ashAI = new AshAI();
+		g.run(ashAI);
 	}
 
 	
