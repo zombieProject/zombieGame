@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import agent.Agent;
@@ -66,7 +65,6 @@ public class Scene {
 		
 	}
 
-	
 	Scene(String filepath){
 		score = 0;
 		zombielist = new HashMap<Integer, Zombie>();
@@ -156,7 +154,7 @@ public class Scene {
 	
 	private void move(Agent a, int x, int y){
 		if(a.isAsh()){
-			if(distance(a.getX(),ash.getY(),x,y) <= ASH_LIMIT){
+			if(distance(a.getX(),a.getY(),x,y) <= ASH_LIMIT){
 				a.setDestination(x, y);
 			}
 			else {
@@ -166,7 +164,7 @@ public class Scene {
 				
 			}
 		}else{
-			if(distance(a.getX(),ash.getY(),x,y) <= ZOMBIE_LIMIT){
+			if(distance(a.getX(),a.getY(),x,y) <= ZOMBIE_LIMIT){
 				a.setDestination(x, y);	
 		}else{
 			double offsetx = offsetX(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
@@ -228,7 +226,7 @@ public class Scene {
 	
 	
 	public static void main(String args[]){
-		Scene s1 = new Scene("D:/Workspace/zombie/testcase/testcase1.txt");
+		Scene s1 = new Scene("testcase/testcase1.txt");
 		s1.printScene();
 //		double a = 8.8;
 		System.out.println(s1.offsetY(400,0,0,0,500));

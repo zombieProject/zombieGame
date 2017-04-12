@@ -79,7 +79,7 @@ public class Game {
 	public static void main(String args[]){
 		
 		// need to modify for your own location
-		Scene initialscene = new Scene("E:/Northeastern University/CS5150 Game AI/Project/ZombieGame/testcase/testcase1.txt");
+		Scene initialscene = new Scene("testcase/testcase1.txt");
 		Game g = new Game(initialscene);
 		g.run();
 	}
