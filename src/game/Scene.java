@@ -75,6 +75,7 @@ public class Scene {
 		for (Map.Entry<Integer, Human> entry : s.getHumanlist().entrySet()){
 			humanlist.put(entry.getKey(), new Human(entry.getValue()));
 		}
+		zombieMove();
 		
 		status = s.getStatus();
 		
@@ -126,7 +127,7 @@ public class Scene {
 	}
 	
 	public void nextScene(String ashmove){
-		zombieMove();
+//		zombieMove();
 		ashMove(ashmove);
 		ashKillZombie();
 		zombieKillHuman();
