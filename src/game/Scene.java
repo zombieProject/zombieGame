@@ -1,5 +1,7 @@
 package game;
 
+import agent.*;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,8 +23,7 @@ public class Scene {
 	private static final int TOP = 0;
 	public static final int RIGHT = 16000;
 	public static final int DOWN = 9000;
-	private static final int ZOMBIE_LIMIT = 400;
-
+	public static final int ZOMBIE_LIMIT = 400;
 	public static final int ASH_LIMIT = 1000;
 	public static final int SHOOTING_RANGE = 2000;
 	
@@ -77,6 +78,7 @@ public class Scene {
 		for (Map.Entry<Integer, Human> entry : s.getHumanlist().entrySet()){
 			humanlist.put(entry.getKey(), new Human(entry.getValue()));
 		}
+		zombieMove();
 		
 		status = s.getStatus();
 		
@@ -128,7 +130,7 @@ public class Scene {
 	}
 	
 	public void nextScene(String ashmove){
-		zombieMove();
+//		zombieMove();
 		ashMove(ashmove);
 		ashKillZombie();
 		zombieKillHuman();

@@ -1,6 +1,7 @@
 package ui;
 
 import game.Scene;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -12,7 +13,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class RootUI extends Application {
     public static final int scaleFactor = 15;
     public static final double menuHeight = 500;
-    public static final double radius = 800;
+    public static final double radius = 400;
+    public static final double padding = 1000;
     private static RootUI instance;
     private static CountDownLatch latch = new CountDownLatch(1);
     private static AtomicReference<List<Scene>> tempScenes = new AtomicReference<>();
@@ -51,9 +53,6 @@ public class RootUI extends Application {
         setInstance(this);
         primaryStage.setTitle("code vs zombies");
         VBox vBox = new VBox();
-        double totalHeight = Scene.DOWN + menuHeight;
-        javafx.scene.Scene scene = new javafx.scene.Scene(vBox, scale(Scene.RIGHT), scale(totalHeight));
-        primaryStage.setScene(scene);
 
         gameScreen = new GameScreen();
         gameScreen.appendToPane(vBox);
@@ -64,8 +63,11 @@ public class RootUI extends Application {
         primaryStage.show();
 
         nextScene();
-
         controlBar.setCallback(this::nextScene, this::prevScene, this::play);
+
+        double totalHeight = gameScreen.getHeight() + scale(menuHeight + padding);
+        javafx.scene.Scene scene = new javafx.scene.Scene(vBox);
+        primaryStage.setScene(scene);
     }
 
     public boolean nextScene(){
@@ -87,12 +89,18 @@ public class RootUI extends Application {
     }
 
     public void play(){
-        while (nextScene()){
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        final long[] prevTime = {System.currentTimeMillis()};
+        new AnimationTimer(){
+            @Override
+            public void handle(long now) {
+                now = System.currentTimeMillis();
+                if(now - prevTime[0] > 1000L){
+                    prevTime[0] = now;
+                    if(!nextScene()){
+                        this.stop();
+                    }
+                }
             }
-        }
+        }.start();
     }
 }
