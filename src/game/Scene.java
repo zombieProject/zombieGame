@@ -15,14 +15,16 @@ import agent.Ash;
 import agent.Human;
 import agent.Zombie;
 
+
 public class Scene {
 	private static final int LEFT = 0;
 	private static final int TOP = 0;
 	public static final int RIGHT = 16000;
 	public static final int DOWN = 9000;
 	private static final int ZOMBIE_LIMIT = 400;
-	private static final int ASH_LIMIT = 1000;
-	private static final int SHOOTING_RANGE = 2000;
+
+	public static final int ASH_LIMIT = 1000;
+	public static final int SHOOTING_RANGE = 2000;
 	
 	private String status;
 	Ash ash;
@@ -199,26 +201,6 @@ public class Scene {
 	}
 	
 	private void move(Agent a, int x, int y){
-//		if(a.isAsh()){
-//			if(distance(a.getX(),a.getY(),x,y) <= ASH_LIMIT){
-//				a.setDestination(x, y);
-//			}
-//			else {
-//				double offsetx = offsetX(ASH_LIMIT,a.getX(),a.getY(),x,y);
-//				double offsety = offsetY(ASH_LIMIT,a.getX(),a.getY(),x,y);
-//				a.setDestination((int)offsetx+a.getX(), (int)offsety+a.getY());
-//				
-//			}
-//		}else{
-//			if(distance(a.getX(),a.getY(),x,y) <= ZOMBIE_LIMIT){
-//				a.setDestination(x, y);	
-//		}else{
-//			double offsetx = offsetX(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
-//			double offsety = offsetY(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
-//			a.setDestination((int)offsetx+a.getX(), (int)offsety+a.getY());
-//			}
-//		}
-		
 		int limit;
 
 		if(a.isAsh()) {
@@ -260,7 +242,7 @@ public class Scene {
 		}
 	}
 	
-	private double distance(int x1,int y1, int x2, int y2){
+	public double distance(int x1,int y1, int x2, int y2){
 		return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 	}
 	
