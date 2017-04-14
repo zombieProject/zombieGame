@@ -73,7 +73,7 @@ public class Scene {
 		zombienextlist = new HashMap<Integer,Zombie> ();
 		humanlist = new HashMap<Integer,Human> ();
 		
-		for (Map.Entry<Integer, Zombie> entry : s.getZombieNextlist().entrySet()){
+		for (Map.Entry<Integer, Zombie> entry : s.getZombielist().entrySet()){
 			zombielist.put(entry.getKey(), new Zombie(entry.getValue()));
 		}
 		
@@ -84,8 +84,6 @@ public class Scene {
 		for (Map.Entry<Integer, Human> entry : s.getHumanlist().entrySet()){
 			humanlist.put(entry.getKey(), new Human(entry.getValue()));
 		}
-		zombieMove();
-		
 		status = s.getStatus();
 		
 		
@@ -94,6 +92,7 @@ public class Scene {
 	Scene(String filepath){
 		score = 0;
 		zombielist = new HashMap<Integer, Zombie>();
+        zombienextlist = new HashMap<Integer, Zombie>();
 		humanlist = new HashMap<Integer, Human>();
 		status = "ongoing";
 		this.filePath = filepath;
@@ -115,10 +114,10 @@ public class Scene {
 			for (int i = 0; i < datah.length; i+=2){
 				humanlist.put(i/2, Agents.makeHuman(Integer.parseInt(datah[i]), Integer.parseInt(datah[i+1])));
 			}
-			
-			zombienextlist = new HashMap<Integer,Zombie>(zombielist);
-			//close
-			br.close();
+
+            // update the zombie next list with the next move for each zombies
+            updateZombieNextMove();
+            br.close();
 		}
 		catch(IOException e){
 			e.printStackTrace();
@@ -137,7 +136,12 @@ public class Scene {
 	}
 	
 	public void nextScene(String ashmove){
-		zombieMove();
+
+	    // Zombie moves to the next location
+	    zombieMove();
+
+	    // Zombies next step locations gets updated based on the current move
+		updateZombieNextMove();
 		ashMove(ashmove);
 		ashKillZombie();
 		zombieKillHuman();
@@ -201,14 +205,27 @@ public class Scene {
 	}
 	
 	private void zombieMove(){
-		for (Map.Entry<Integer, Zombie> entry : zombienextlist.entrySet()) {  
-//			move(entry.getValue(),500,500);
+        for (Map.Entry<Integer, Zombie> entry : zombielist.entrySet()) {
 			Agent target = findTarget(entry.getValue());
 			move(entry.getValue(),target.getX(),target.getY());
 			
 		}
 	}
-	
+
+	public void updateZombieNextMove() {
+
+	    // Next predicted move will always be based on the first move
+	    HashMap<Integer, Zombie> zombiesNextList = new HashMap<>();
+
+        for (Map.Entry<Integer, Zombie> entry : zombielist.entrySet()) {
+            Zombie copyOfZombie = new Zombie(entry.getValue());
+            Agent target = findTarget(copyOfZombie);
+            move(copyOfZombie,target.getX(),target.getY());
+            zombiesNextList.put(entry.getKey(), copyOfZombie);
+        }
+        this.zombienextlist = zombiesNextList;
+    }
+
 	private void move(Agent a, int x, int y){
 		int limit;
 
