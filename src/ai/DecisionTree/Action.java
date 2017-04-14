@@ -1,18 +1,23 @@
 package ai.DecisionTree;
 
+import com.sun.org.apache.regexp.internal.RE;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
  * Created by shubhimittal on 4/12/17.
  */
 
-class Action extends NodeImplementer {
+public class Action extends NodeImplementer {
 
     private boolean executed;
+    private Object result;
 
-    private Runnable action;
+    private Supplier<Object> action;
 
-    Action(Runnable s) {
+    Action(Supplier s) {
         this.action = s;
     }
 
@@ -20,8 +25,12 @@ class Action extends NodeImplementer {
         return this.executed;
     }
 
+    public Object getResult() {
+        return this.result;
+    }
+
     public void execute() {
-        action.run();
+        this.result = action.get();
         this.executed = true;
     }
 

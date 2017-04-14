@@ -11,6 +11,7 @@ public class DecisionTree {
     private Node node;
     private DecisionTree left;
     private DecisionTree right;
+    private Action actionExecuted;
 
 
     DecisionTree(Node node , DecisionTree left, DecisionTree right ) {
@@ -18,6 +19,10 @@ public class DecisionTree {
         this.node = node;
         this.left = left;
         this.right = right;
+    }
+
+    public Action getActionExecuted() {
+        return actionExecuted;
     }
 
     public void executeDecisionTree() {
@@ -35,6 +40,8 @@ public class DecisionTree {
                 startNode = cond.getFalseValue();
              }
         }
-        startNode.asAction().execute();
+
+        actionExecuted = startNode.asAction();
+        actionExecuted.execute();
     }
 }

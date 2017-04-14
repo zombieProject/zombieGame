@@ -64,6 +64,8 @@ public class Scene {
 	}
 	
 	Scene(Scene s){
+
+	    filePath = s.filePath;
 		score = s.score;
 		ash = new Ash(s.getAsh());
 		
@@ -96,7 +98,7 @@ public class Scene {
 		status = "ongoing";
 		this.filePath = filepath;
 		try{
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(this.filePath)));
 			// ash line
 			String input=br.readLine();
 			String[] dataa = input.split("\t");
@@ -135,7 +137,7 @@ public class Scene {
 	}
 	
 	public void nextScene(String ashmove){
-		//zombieMove();
+		zombieMove();
 		ashMove(ashmove);
 		ashKillZombie();
 		zombieKillHuman();

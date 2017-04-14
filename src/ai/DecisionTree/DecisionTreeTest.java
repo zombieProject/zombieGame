@@ -10,22 +10,17 @@ import static junit.framework.TestCase.assertEquals;
 public class DecisionTreeTest {
 
 
-    private void action1() {
+    private Object action1() { return "action1"; }
 
-        System.out.println("action1");
+    private Object action2() {return "action2";}
+
+
+    private Object action3() {
+        return "action3";
     }
 
-    private void action2() {
-        System.out.println("action2");
-    }
-
-
-    private void action3() {
-        System.out.println("action 3");
-    }
-
-    private void action4() {
-        System.out.println("action 4");
+    private Object action4() {
+        return "action4";
     }
 
 
@@ -34,7 +29,7 @@ public class DecisionTreeTest {
     //         2 > 1       Action3
     // Action1    Action2
 
-    // Action1 should get executed
+    // Action1 should get executed here
 
     @Test
     public void testTree1() {
@@ -68,7 +63,10 @@ public class DecisionTreeTest {
 
 
         // Action 1 should get executed
-        assertEquals(act1.asAction().getExecuted(), true);
+        //assertEquals(act1.asAction().getExecuted(), true);
+        //assertEquals((String) act1.asAction().getResult(), "action1");
+        assertEquals(sampleTree.getActionExecuted().getResult(), "action1");
+        assertEquals(sampleTree.getActionExecuted().getExecuted(), true);
 
         // No other actions should get executed
         assertEquals(act2.asAction().getExecuted(), false);

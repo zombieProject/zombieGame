@@ -39,6 +39,13 @@ public class SceneAPI extends Scene {
 
     public SceneAPI(String filepath) {
         super(filepath);
+
+        humanToBeKilledInNextTurn = new ArrayList<>();
+        zombiesKillingHumanInNextTurn = new ArrayList<>();
+        humanToBeSavedInThisTurn = new ArrayList<>();
+        zombiesToKillInThisTurn = new ArrayList<>();
+        zombiesToKillInNextTurn = new ArrayList<>();
+
         setHumanZombieKillingsInNextTurn();
         setHumansToSaveInThisTurn();
         setZombiesToKillInThisTurn();

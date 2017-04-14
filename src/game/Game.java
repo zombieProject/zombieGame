@@ -2,6 +2,7 @@ package game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import agent.Ash;
 import agent.Human;
@@ -65,23 +66,31 @@ public class Game {
 	public void run(AshAI ash){
 		while(scenelist.get(scenelist.size()-1).getStatus().equals("ongoing"))
 		{
-			Scene nextscene = new Scene(scenelist.get(scenelist.size()-1));
-			nextscene.nextScene(ash.move(nextscene.outGameSequence()));
-			scenelist.add(nextscene);
+			Scene nextScene = new Scene(scenelist.get(scenelist.size()-1));
+
+			//nextScene.nextScene(ash.move(nextScene.outGameSequence()));
+
+            // Calling the new move method from here.
+			Map<String, Integer> target = ash.move(nextScene);
+			String targetMove = target.get("x") + " " + target.get("y");
+
+			nextScene.nextScene(targetMove);
+
+			scenelist.add(nextScene);
 		}
 		
-		Scene lastscene = scenelist.get(scenelist.size()-1);
+		Scene lastScene = scenelist.get(scenelist.size()-1);
 		
-		System.out.println("RESULT: " + lastscene.getStatus());
-		System.out.println("YOR SCORE: " + lastscene.getScore());
+		System.out.println("RESULT: " + lastScene.getStatus());
+		System.out.println("YOUR SCORE: " + lastScene.getScore());
 		
 	}
 	
 	public static void main(String args[]){
 		
 		// need to modify for your own location
-		Scene initialscene = new Scene("testcase/testcase3.txt");
-		Game g = new Game(initialscene);
+		Scene initialScene = new Scene("testcase/testcase3.txt");
+		Game g = new Game(initialScene);
 		AshAI ashAI = new AshAI();
 		g.run(ashAI);
 		RootUI.createGUI(g.scenelist);
