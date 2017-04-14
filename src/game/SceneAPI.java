@@ -1,172 +1,285 @@
 package game;
 
+import agent.Agent;
 import agent.Human;
 import agent.Zombie;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by shubhimittal on 4/12/17.
  */
 
 
+// All The conditions and actions are developed keeping in mind
+// Zombies current location and possible location in the their
+// next turn.
+
 public class SceneAPI extends Scene {
 
-    private List<Human> humansToBeKilled;
-    private List<Zombie> zombiesToBeKilled;
 
-    SceneAPI(String filepath) {
+    // human and zombie in at the same index in these
+    // lists share the same coordinates
+
+    private List<Human>  humanToBeKilledInNextTurn;
+    private List<Zombie> zombiesKillingHumanInNextTurn;
+
+    // list has all the humans that can be saved
+    // by Ash
+    private List<Human> humanToBeSavedInThisTurn;
+
+
+    // list of all the zombies that can be killed by ash in this turn
+    private List<Zombie> zombiesToKillInThisTurn;
+
+
+    // list of all the zombies that can be killed by ash after in second chance.
+    private List<Zombie> zombiesToKillInNextTurn;
+
+
+    public SceneAPI(String filepath) {
         super(filepath);
-        this.humansToBeKilled = getHumansToBeKilled();
-        this.zombiesToBeKilled = getZombiesToKill();
+        setHumanZombieKillingsInNextTurn();
+        setHumansToSaveInThisTurn();
+        setZombiesToKillInThisTurn();
+        setZombiesToKillInNextTurn();
     }
 
 
+    /************************************************************************
+     *
+     * Ash's next one move prediction based on the prediction of zombies
+     * current location and next action
+     */
 
-    private Human closestHumanToAsh() {
 
+    // Sets humanToBeKilledInNextTurn
+    // Sets zombiesKillingHumanInNextTurn
+    private void setHumanZombieKillingsInNextTurn() {
 
-    }
-
-    private List<Human> orderByDistance() {
-
-        return new LinkedList<>();
-
-    }
-
-    // RETURNS: A list of humans that will be killed by surrounding zombies
-    // with a 100% probability.
-    private List<Human> getHumansToBeKilled() {
-        List<Human> humansToBeKilled = new LinkedList<>();
-
-        // Iterate over all the humans in the game
-        for(Map.Entry<Integer, Human> humanEntry: getHumanlist().entrySet()) {
+        for(Map.Entry<Integer, Human> humanEntry : getHumanlist().entrySet()) {
             Human human = humanEntry.getValue();
 
-            // Iterate over all the zombies in the game with their predicted location
-            // in the next step in the game.
-            for(Map.Entry<Integer, Zombie> zombieEntry : getZombieNextlist().entrySet()) {
+            // check if this human shares coordinates with any of the zombies in the
+            // currently.
+            // if yes, then this human will be killed in next step by the zombie
+            for(Map.Entry<Integer, Zombie> zombieEntry: getZombielist().entrySet()) {
 
                 Zombie zombie = zombieEntry.getValue();
+                if(human.getX() == zombie.getX() && human.getY() == zombie.getY()) {
+                    // same x, y coordinates for human and this zombie
 
-                // calculates the distance between human and this zombie in the next step
-                // in the game.
-                double humanZombieDistance = distance(
-                        human.getX(), human.getY(), zombie.getX(), zombie.getY());
+                    // humans that will be killed by zombies when their turn comes
+                   humanToBeKilledInNextTurn.add(human);
 
-                // if the distance between human and zombie is within 400 units
-                // then this human will be killed by this zombie in the next step
-                if(humanZombieDistance < 400) {
-                    humansToBeKilled.add(human);
+                   // zombies that will be killing these humans in their next turn
+                   zombiesKillingHumanInNextTurn.add(zombie);
                 }
             }
+
+
         }
-        return humansToBeKilled;
 
     }
 
+    // Sets humanToBeSavedInThisTurn, humans that can be saved in this step of Ash
+    // These are the humans that can be killed in the next turn by the zombies
+    private void setHumansToSaveInThisTurn() {
 
-    // RETURNS: true if there exists human that can be killed.
-    public boolean canHumanBeKilled() {
-        return humansToBeKilled.size() > 0;
-    }
+        for(Human human : humanToBeKilledInNextTurn) {
 
-    // RETURNS: true if there exists a human that can be saved by Ash in the next step
-    public boolean canAshSaveHuman() {
+            double humanAshDistance = distance(ash.getX(), ash.getY(), human.getX(), human.getY());
 
-       int ashX = ash.getX();
-       int ashY = ash.getY();
+            if(humanAshDistance < 3000) {
+                humanToBeSavedInThisTurn.add(human);
 
-       boolean ashCanSave = false;
-
-       for(Human human: humansToBeKilled) {
-
-           // calculate distance between human and the ash
-           // A zombie is going to replace this human in next step
-
-           double humanAshDistance = distance(human.getX(), human.getY(), ashX, ashY);
-
-           // ash will also travel 1000 unite towards target
-           // assuming that target is at this human's place then
-           // total distance between ash and the human should be less than 3000
-           ashCanSave = humanAshDistance < 3000;
-
-           if(ashCanSave) {
-               break;
-           }
-
-       }
-        return ashCanSave;
+            }
+        }
     }
 
 
+    private void setZombiesToKillInThisTurn() {
 
-    public Human closestHuman() {
-        int ashX = ash.getX();
-        int ashY = ash.getY();
+        for(Map.Entry<Integer, Zombie> zombieEntry : getZombielist().entrySet()) {
+            Zombie zombie = zombieEntry.getValue();
 
-        double minDistance = Double.MAX_VALUE;
-        Human minHuman = null;
+            double humanAshDistance = distance(ash.getX(), ash.getY(), zombie.getX(), zombie.getY());
 
-        for(Human h: humansToBeKilled) {
-            double humanAshDistance = distance(h.getX(), h.getY(), ashX, ashY);
+            if(humanAshDistance < 3000) {
+                zombiesToKillInThisTurn.add(zombie);
 
-            if(humanAshDistance < minDistance) {
-
-                minDistance = humanAshDistance;
-                minHuman = h;
             }
         }
 
-        return minHuman;
     }
 
 
-    private List<Zombie> getZombiesToKill() {
-
-
-        List<Zombie> zombies = new LinkedList<>();
-
-        for (Map.Entry<Integer, Zombie> zombieEntry : getZombieNextlist().entrySet()) {
+    private void setZombiesToKillInNextTurn() {
+        for(Map.Entry<Integer, Zombie> zombieEntry: getZombieNextlist().entrySet()) {
+            // we check zombies after one move
 
             Zombie zombie = zombieEntry.getValue();
 
             double ashZombieDistance = distance(ash.getX(), ash.getY(), zombie.getX(), zombie.getY());
 
-            if (ashZombieDistance < 3000) {
-                zombies.add(zombie);
+            // Ash will also move by 1000 units in the next turn
+            // Ash can again move 1000 units towards the zombies
+            // And have an added shooting range of 2000
+            if(ashZombieDistance < 4000) {
+                zombiesToKillInNextTurn.add(zombie);
             }
         }
-
-        return zombies;
     }
 
+    private Agent closestToAsh(List<Agent> agents) {
 
-    public boolean canAshKillZombies() {
-        return zombiesToBeKilled.size() > 0;
-    }
-
-
-    public Zombie closestZombie() {
+        // we choose the human that is closest to Ash and that can be saved
         int ashX = ash.getX();
         int ashY = ash.getY();
 
         double minDistance = Double.MAX_VALUE;
-        Zombie minZombie = null;
+        Agent minAgent = null;
 
-        for(Zombie z : zombiesToBeKilled) {
-            double zombieAshDistance = distance(z.getX(), z.getY(), ashX, ashY);
+        for(Agent a: agents) {
+            double agentAshDistance = distance(a.getX(), a.getY(), ashX, ashY);
 
-            if(zombieAshDistance < minDistance) {
+            if(agentAshDistance < minDistance) {
 
-                minDistance = zombieAshDistance;
-                minZombie = z;
+                minDistance = agentAshDistance;
+                minAgent = a;
             }
         }
-        return minZombie;
+
+        return minAgent;
+
+    }
+
+    private Zombie killZombie(int turn) {
+
+        List<Agent> a = new ArrayList<>();
+        Zombie zombieToKill;
+
+        if(turn == 1) {
+            a.addAll(zombiesToKillInThisTurn);
+        } else {
+            a.addAll(zombiesToKillInNextTurn);
+        }
+        if(a.size() > 0 && a.size() == 1) {
+
+            zombieToKill = (Zombie) a.get(0);
+
+        } else {
+
+            //TODO: change the strategy to kill more than one zombies
+            zombieToKill =  (Zombie) closestToAsh(a);
+        }
+
+        return zombieToKill;
+    }
+
+    // CONDITIONS:
+
+    // RETURNS: true if there exists a human that can be killed in by zombies in their next turn
+
+    public boolean canHumanBekilledInNextTurn() {
+        return humanToBeKilledInNextTurn.size() > 0;
+    }
+
+    // RETURNS: true iff there exists a human that can be saved by Ash in this turn,
+    // humans here include the humans that can be killed by the zombie
+    public boolean canAshSaveHumanInThisTurn() {
+        return humanToBeSavedInThisTurn.size() > 0;
     }
 
 
+    // RETURNS: true iff there exists a zombie that can be killed by Ash in this turn
+    public boolean canAshKillZombiesInThisTurn() {
+        return zombiesToKillInThisTurn.size() > 0;
+    }
+
+
+
+
+    // RETURNS: true iff there is a 100% possibility of Ash killing one of the humans
+   public boolean canAshKillZombiesInNextTurn() {
+
+
+
+       return zombiesToKillInNextTurn.size() > 0;
+   }
+
+    // ACTIONS
+
+    // RETURNS: the human that is closest to ash and can be saved by ash.
+    //
+    public Map<String, Integer> saveHumanInThisTurn() {
+        List<Agent> a = new ArrayList<>();
+        Human humanToSave;
+        Map<String, Integer> coord = new HashMap<>();
+        a.addAll(humanToBeSavedInThisTurn);
+
+        if(a.size() > 0 && a.size() == 1) {
+            // there is only one human to save
+            humanToSave = (Human) a.get(0);
+
+        } else {
+            // TODO: change strategy to save more than one human.
+            humanToSave = (Human) closestToAsh(a);
+        }
+
+        coord.put("x", humanToSave.getX());
+        coord.put("y", humanToSave.getY());
+
+        return coord;
+    }
+
+    // RETURNS: the zombie that is closest to ash and can be killed by ash
+    // in this turn
+    public Map<String, Integer> killZombieInThisTurn() {
+        Map<String, Integer> coord = new HashMap<>();
+        Zombie zombieToKill = killZombie(1);
+        coord.put("x", zombieToKill.getX());
+        coord.put("y", zombieToKill.getY());
+        return coord;
+    }
+
+    public Map<String, Integer> killzombieInNextTurn() {
+        Map<String, Integer> coord = new HashMap<>();
+        Zombie zombieToKill = killZombie(2);
+        coord.put("x", zombieToKill.getX());
+        coord.put("y", zombieToKill.getY());
+        return coord;
+    }
+
+
+    // if Ash cannot kill a zombie even in the next two turns then zombie is
+    // really far so in that case
+    // Ash will have to move towards a different end
+
+    public Map<String, Integer> moveForBetterFuture() {
+
+        HashMap<String, Integer> location = new HashMap<>();
+        int ashX = ash.getX();
+        int ashY = ash.getY();
+
+        double distanceFromTopLeft = distance(ashX, ashY, 0 , 0);
+
+        double distanceFromTopRight = distance(ashX, ashY, 16000, 0);
+
+        if(distanceFromTopLeft < distanceFromTopRight) {
+            // ash is closer to left as compared to right
+            // ash should move to right as zombies do not lie in left
+            location.put("x", 16000);
+            location.put("y", 0);
+
+        } else {
+            // ash is closer to right as compared to left
+            // ash should move to left as zombies do not lie in right
+
+            location.put("x", 0);
+            location.put("y", 0);
+        }
+
+        return location;
+    }
 }

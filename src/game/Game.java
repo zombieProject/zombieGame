@@ -52,8 +52,8 @@ public class Game {
 //
 //	To help, each zombie's future coordinates will be sent along side the current coordinates.
 
-	int totalscore;
-	List<Scene> scenelist;
+	public int totalscore;
+	public List<Scene> scenelist;
 	
 	public Game(Scene s){
 		totalscore = 0;
@@ -84,7 +84,6 @@ public class Game {
 		Game g = new Game(initialscene);
 		AshAI ashAI = new AshAI();
 		g.run(ashAI);
-		
 		RootUI.createGUI(g.scenelist);
 	}
 

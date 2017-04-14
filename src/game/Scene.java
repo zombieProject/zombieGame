@@ -26,14 +26,18 @@ public class Scene {
 	public static final int ZOMBIE_LIMIT = 400;
 	public static final int ASH_LIMIT = 1000;
 	public static final int SHOOTING_RANGE = 2000;
-	
-	private String status;
+    private String filePath;
+    private String status;
 	Ash ash;
 	Map<Integer,Zombie> zombielist;
 	Map<Integer,Zombie> zombienextlist;
 	Map<Integer, Human> humanlist;
 	int score;
-	
+
+    public String getFilePath() {
+        return filePath;
+    }
+
 	public String getStatus(){
 		return status;
 	}
@@ -90,6 +94,7 @@ public class Scene {
 		zombielist = new HashMap<Integer, Zombie>();
 		humanlist = new HashMap<Integer, Human>();
 		status = "ongoing";
+		this.filePath = filepath;
 		try{
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
 			// ash line
@@ -130,7 +135,7 @@ public class Scene {
 	}
 	
 	public void nextScene(String ashmove){
-//		zombieMove();
+		//zombieMove();
 		ashMove(ashmove);
 		ashKillZombie();
 		zombieKillHuman();
