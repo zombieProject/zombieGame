@@ -110,9 +110,9 @@ public class SceneAPI extends Scene {
         for(Map.Entry<Integer, Zombie> zombieEntry : getZombielist().entrySet()) {
             Zombie zombie = zombieEntry.getValue();
 
-            double humanAshDistance = distance(ash.getX(), ash.getY(), zombie.getX(), zombie.getY());
+            double ashZombieDistance = distance(ash.getX(), ash.getY(), zombie.getX(), zombie.getY());
 
-            if(humanAshDistance < 3000) {
+            if(ashZombieDistance < 3000) {
                 zombiesToKillInThisTurn.add(zombie);
 
             }
@@ -288,5 +288,24 @@ public class SceneAPI extends Scene {
         }
 
         return location;
+
+    }
+
+    public Map<String, Integer> moveToHumanCentroid() {
+
+        int totalX = 0;
+        int totalY = 0;
+
+        HashMap<String, Integer> target = new HashMap<>();
+        for(Map.Entry<Integer, Human> humanEntry: getHumanlist().entrySet()) {
+
+            totalX = totalX + humanEntry.getValue().getX();
+            totalY = totalY + humanEntry.getValue().getY();
+
+        }
+
+        target.put("x", totalX/getHumanlist().size());
+        target.put("y", totalY/getHumanlist().size());
+        return target;
     }
 }

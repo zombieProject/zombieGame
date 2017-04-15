@@ -99,18 +99,22 @@ public class Scene {
 		try{
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(this.filePath)));
 			// ash line
-			String input=br.readLine();
-			String[] dataa = input.split("\t");
+			String input1=br.readLine();
+			input1 = input1.trim().replaceAll("\\s+", "\t" );
+
+			String[] dataa = input1.split("\t");
 			this.ash = Agents.makeAsh(Integer.parseInt(dataa[0]), Integer.parseInt(dataa[1]));
 			// zombie line
-			input = br.readLine();
-			String[] dataz = input.split("\t");
+			String input2 = br.readLine();
+            input2 = input2.trim().replaceAll("\\s+", "\t" );
+			String[] dataz = input2.split("\t");
 			for (int i = 0; i < dataz.length; i+=2){
 				zombielist.put(i/2, Agents.makeZombie(Integer.parseInt(dataz[i]), Integer.parseInt(dataz[i+1])));
 			}
 			// human line
-			input = br.readLine();
-			String[] datah = input.split("\t");
+			String input3 = br.readLine();
+            input3 = input3.trim().replaceAll("\\s+", "\t" );
+			String[] datah = input3.split("\t");
 			for (int i = 0; i < datah.length; i+=2){
 				humanlist.put(i/2, Agents.makeHuman(Integer.parseInt(datah[i]), Integer.parseInt(datah[i+1])));
 			}
@@ -286,14 +290,17 @@ public class Scene {
 	}
 	
 	private void zombieKillHuman(){
+
+	    Map<Integer, Human> humansKilled = new HashMap<>(humanlist);
+
 		for (Map.Entry<Integer, Zombie> entryz : zombienextlist.entrySet()){
-			for (Map.Entry<Integer, Human> entryh : humanlist.entrySet()){
+			for (Map.Entry<Integer, Human> entryh : humansKilled.entrySet()){
 				if(entryz.getValue().getX()==entryh.getValue().getX()&&
 						entryz.getValue().getY()==entryh.getValue().getY()){
-					humanlist.remove(entryh.getKey());
+                    humanlist.remove(entryh.getKey());
 				}
 			}		
-		}		
+		}
 	}
 	
 	
