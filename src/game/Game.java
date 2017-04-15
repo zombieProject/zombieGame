@@ -78,12 +78,7 @@ public class Game {
 
 			scenelist.add(nextScene);
 		}
-		
-		Scene lastScene = scenelist.get(scenelist.size()-1);
-		
-		System.out.println("RESULT: " + lastScene.getStatus());
-		System.out.println("YOUR SCORE: " + lastScene.getScore());
-		
+
 	}
 	
 	public static void main(String args[]){

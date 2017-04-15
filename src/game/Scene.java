@@ -63,7 +63,7 @@ public class Scene {
 		return humanlist;
 	}
 	
-	Scene(Scene s){
+	public Scene(Scene s){
 
 	    filePath = s.filePath;
 		score = s.score;
@@ -89,7 +89,7 @@ public class Scene {
 		
 	}
 
-	Scene(String filepath){
+	public Scene(String filepath){
 		score = 0;
 		zombielist = new HashMap<Integer, Zombie>();
         zombienextlist = new HashMap<Integer, Zombie>();

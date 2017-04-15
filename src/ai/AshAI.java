@@ -1,20 +1,13 @@
 package ai;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import ai.DecisionTree.DecisionTree;
 import ai.DecisionTree.DecisionTreeCreator;
-import game.Game;
 import game.Scene;
 
 public class AshAI {
-
-    public String move(List<Integer> input){
-        //return "8250 4500"; // for test 1
-		return "8800 7000";   // for test 3
-    }
 
     public Map<String, Integer> move(Scene currentScene) {
 
