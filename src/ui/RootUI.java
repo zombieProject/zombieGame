@@ -94,7 +94,7 @@ public class RootUI extends Application {
             @Override
             public void handle(long now) {
                 now = System.currentTimeMillis();
-                if(now - prevTime[0] > 1000L){
+                if(now - prevTime[0] > 400L){
                     prevTime[0] = now;
                     if(!nextScene()){
                         this.stop();

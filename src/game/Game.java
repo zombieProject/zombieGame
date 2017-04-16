@@ -5,6 +5,7 @@ import java.util.List;
 
 import ai.AshAi;
 import ai.AshAiDT;
+import ai.AshAiMC;
 import ui.RootUI;
 
 public class Game {
@@ -52,6 +53,8 @@ public class Game {
 
 	public int totalscore;
 	public List<Scene> scenelist;
+	private static final int DEFAULT_STAGE = 1;
+	private static final String INIT_SCENE_FILE = "testcase/testcase7.txt";
 	
 	public Game(Scene s){
 		totalscore = 0;
@@ -71,15 +74,36 @@ public class Game {
 	}
 	
 	public static void main(String args[]){
-		
-		// need to modify for your own location
-		Scene initialScene = new Scene("testcase/testcase9.txt");
+        int stage = 0;
+
+        try {
+            stage = Integer.parseInt(args[0]);
+
+        } catch (ArrayIndexOutOfBoundsException e) {
+
+	        stage = DEFAULT_STAGE;
+        } catch (Exception e) {
+
+            throw new RuntimeException("illegal stage specified. Stage can be any one of [1, 2]");
+        }
+
+        Scene initialScene = new Scene(INIT_SCENE_FILE);
+
 		Game g = new Game(initialScene);
-		AshAiDT ashDT = new AshAiDT();
-		g.run(ashDT);
+
+        AshAi ai = null;
+
+		switch (stage) {
+            case 1: ai = new AshAiDT();
+            break;
+            case 2: ai = new AshAiMC();
+            break;
+            default:
+                throw new RuntimeException("illegal stage specified. Stage can be any one of [1, 2]");
+        }
+		g.run(ai);
 		RootUI.createGUI(g.scenelist);
 	}
 
-	
 
 }
