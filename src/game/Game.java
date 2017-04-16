@@ -2,12 +2,9 @@ package game;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import agent.Ash;
-import agent.Human;
-import agent.Zombie;
-import ai.AshAI;
+import ai.AshAi;
+import ai.AshAiDT;
 import ui.RootUI;
 
 public class Game {
@@ -63,19 +60,11 @@ public class Game {
 	}
 	
 	
-	public void run(AshAI ash){
+	public void run(AshAi ash){
 		while(scenelist.get(scenelist.size()-1).getStatus().equals("ongoing"))
 		{
 			Scene nextScene = new Scene(scenelist.get(scenelist.size()-1));
-
-			//nextScene.nextScene(ash.move(nextScene.outGameSequence()));
-
-            // Calling the new move method from here.
-			Map<String, Integer> target = ash.move(nextScene);
-			String targetMove = target.get("x") + " " + target.get("y");
-
-			nextScene.nextScene(targetMove);
-
+			nextScene.nextScene(ash.move(nextScene));
 			scenelist.add(nextScene);
 		}
 
@@ -84,10 +73,10 @@ public class Game {
 	public static void main(String args[]){
 		
 		// need to modify for your own location
-		Scene initialScene = new Scene("testcase/testcase3.txt");
+		Scene initialScene = new Scene("testcase/testcase9.txt");
 		Game g = new Game(initialScene);
-		AshAI ashAI = new AshAI();
-		g.run(ashAI);
+		AshAiDT ashDT = new AshAiDT();
+		g.run(ashDT);
 		RootUI.createGUI(g.scenelist);
 	}
 

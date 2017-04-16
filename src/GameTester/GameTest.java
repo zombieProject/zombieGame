@@ -1,11 +1,13 @@
 package GameTester;
 
-import ai.AshAI;
+import ai.AshAi;
+import ai.AshAiDT;
+import ai.AshAiMC;
 import game.Game;
 import game.Scene;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+
 import static junit.framework.TestCase.assertEquals;
 /**
  * Created by shubhimittal on 4/14/17.
@@ -14,14 +16,15 @@ public class GameTest {
 
     private Scene gameScene;
     private String message;
+    private static int score;
+    private  AshAi ai;
 
-    private void initGameEnvironment(int episodeNumber) {
 
+    private void initGameEnvironment(int episodeNumber, AshAi ai) {
         String testCaseFilePath =  "testcase/testcase" + episodeNumber  + ".txt";
         Scene initialScene = new Scene(testCaseFilePath);
         Game g = new Game(initialScene);
-        AshAI ashAI = new AshAI();
-        g.run(ashAI);
+        g.run(ai);
         gameScene = g.scenelist.get(g.scenelist.size()-1);
 
         message = "Test Scenario " + episodeNumber + " :Score " + gameScene.getScore() + " , Status " + gameScene
@@ -29,90 +32,119 @@ public class GameTest {
 
     }
 
+
+    @AfterClass
+    public static void printScore(){
+        System.out.println("Total Score: " + score);
+    }
+
     @Test
-    public void gameScenario1(){
-        initGameEnvironment(1);
+    public void gameScenario1DT(){
+        initGameEnvironment(1,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario2(){
-        initGameEnvironment(2);
+    public void gameScenario2DT(){
+        initGameEnvironment(2,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario3(){
-        initGameEnvironment(3);
+    public void gameScenario3DT(){
+        initGameEnvironment(3,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario4(){
-        initGameEnvironment(4);
+    public void gameScenario4DT(){
+        initGameEnvironment(4,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario5(){
-        initGameEnvironment(5);
+    public void gameScenario5DT(){
+        initGameEnvironment(5,  new AshAiDT());
+        score = score + gameScene.getScore();
+        System.out.println(gameScene.getScore());
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario6(){
-        initGameEnvironment(6);
+    public void gameScenario6DT(){
+        initGameEnvironment(6,  new AshAiDT());
+        score = score + gameScene.getScore();
+        System.out.println(gameScene.getScore());
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario7(){
-        initGameEnvironment(7);
+    public void gameScenario7DT(){
+        initGameEnvironment(7,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario8(){
-        initGameEnvironment(8);
+    public void gameScenario8DT(){
+        initGameEnvironment(8,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario9(){
-        initGameEnvironment(9);
+    public void gameScenario9DT(){
+        initGameEnvironment(9,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario10(){
-        initGameEnvironment(10);
+    public void gameScenario10DT(){
+        initGameEnvironment(10,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario11(){
-        initGameEnvironment(11);
+    public void gameScenario11DT(){
+        initGameEnvironment(11,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario12(){
-        initGameEnvironment(12);
+    public void gameScenario12DT(){
+        initGameEnvironment(12,  new AshAiDT());
+        score = score + gameScene.getScore();
+        System.out.println(gameScene.getScore());
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario13(){
-        initGameEnvironment(13);
+    public void gameScenario13DT(){
+        initGameEnvironment(13,  new AshAiDT());
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario14(){
-        initGameEnvironment(14);
+    public void gameScenario14DT(){
+        initGameEnvironment(14,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario15(){
-        initGameEnvironment(15);
+    public void gameScenario15DT(){
+        initGameEnvironment(15,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario16(){
-        initGameEnvironment(16);
+    public void gameScenario16DT(){
+        initGameEnvironment(16,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario17(){
-        initGameEnvironment(17);
+    public void gameScenario17DT(){
+        initGameEnvironment(17,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario18(){
-        initGameEnvironment(18);
+    public void gameScenario18DT(){
+        initGameEnvironment(18,  new AshAiDT());
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario19(){
-        initGameEnvironment(19);
+    public void gameScenario19DT(){
+        initGameEnvironment(19,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario20(){
-        initGameEnvironment(20);
+    public void gameScenario20DT(){
+        initGameEnvironment(20,  new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
     }@Test
-    public void gameScenario21(){
-        initGameEnvironment(21);
+    public void gameScenario21DT() {
+        initGameEnvironment(21, new AshAiDT());
+        score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
+
     }
 
 }
