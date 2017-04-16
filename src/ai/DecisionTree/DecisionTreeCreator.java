@@ -19,6 +19,7 @@ public class DecisionTreeCreator {
         Action saveHumanInThisTurn = new Action(()-> api.saveHumanInThisTurn());
         Action killZombieInNextTurn = new Action(()-> api.killzombieInNextTurn());
         Action killZombieInThisTurn = new Action(()-> api.killZombieInThisTurn());
+        Action moveToClosestHuman = new Action(()-> api.moveToClosestHuman());
 
         // Condition nodes
         Condition canAshKillZombiesInNextTurn = new Condition(
@@ -41,11 +42,12 @@ public class DecisionTreeCreator {
         DecisionTree saveHumanInThisTurnA = new DecisionTree(saveHumanInThisTurn, null, null);
         DecisionTree killZombieInNextTurnA= new DecisionTree(killZombieInNextTurn, null, null);
         DecisionTree killZombieInThisTurnA = new DecisionTree(killZombieInThisTurn, null, null);
+        DecisionTree moveToClosestHumanA = new DecisionTree(moveToClosestHuman, null, null);
 
 
         // condition decision trees
         DecisionTree canAshKillZombiesInNextTurnD = new DecisionTree(
-                canAshKillZombiesInNextTurn, killZombieInNextTurnA, moveToHumanCentroidA);
+                canAshKillZombiesInNextTurn, killZombieInNextTurnA, moveToClosestHumanA);
 
 
         DecisionTree canAshKillZombiesInThisTurnD = new DecisionTree(

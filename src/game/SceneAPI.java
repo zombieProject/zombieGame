@@ -308,4 +308,29 @@ public class SceneAPI extends Scene {
         target.put("y", totalY/getHumanlist().size());
         return target;
     }
+
+    public Map<String, Integer> moveToClosestHuman() {
+
+        HashMap<String, Integer> target = new HashMap<>();
+       List<Agent> agents = new ArrayList<>();
+       agents.addAll(getHumanlist().values());
+       Human human = (Human) closestToAsh(agents);
+       target.put("x", human.getX());
+       target.put("y", human.getY());
+
+       return target;
+    }
+
+    public Map<String, Integer> moveToClosestZombie() {
+
+        HashMap<String, Integer> target = new HashMap<>();
+        List<Agent> agents = new ArrayList<>();
+        agents.addAll(getZombielist().values());
+        Zombie zombie = (Zombie) closestToAsh(agents);
+        target.put("x", zombie.getX());
+        target.put("y", zombie.getY());
+
+        return target;
+    }
+
 }
