@@ -47,7 +47,7 @@ public class GameScreen {
         gc.setFill(Color.YELLOW);
         drawAgent(gc, scene.getAsh());
         gc.setFill(Color.RED);
-        for(Agent zombie : scene.getZombieNextlist().values()){
+        for(Agent zombie : scene.getZombielist().values()){
             drawAgent(gc, zombie);
         }
         gc.setFill(Color.GREEN);

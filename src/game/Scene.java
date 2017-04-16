@@ -283,6 +283,7 @@ public class Scene {
 		for (Map.Entry<Integer, Zombie> entry : copyzombienextlist.entrySet()){
 			if(distance(ash.getX(),ash.getY(),entry.getValue().getX(),entry.getValue().getY())<=SHOOTING_RANGE){
 				zombienextlist.remove(entry.getKey());
+				zombielist.remove(entry.getKey());
 				killcount+=1;
 				score += zombieworth*fibonacci(killcount);
 			}		
