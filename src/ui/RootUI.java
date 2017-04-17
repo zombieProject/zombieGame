@@ -15,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RootUI extends Application {
-    public static final int scaleFactor = 15;
+    public static final int scaleFactor = 18;
     public static final double menuHeight = 500;
     public static final double radius = 400;
     public static final double padding = 1000;

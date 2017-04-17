@@ -54,7 +54,7 @@ public class Game {
 	public int totalscore;
 	public List<Scene> scenelist;
 	private static final int DEFAULT_STAGE = 1;
-	private static final String INIT_SCENE_FILE = "testcase/testcase7.txt";
+	private static final String INIT_SCENE_FILE = "testcase/testcase10.txt";
 	
 	public Game(Scene s){
 		totalscore = 0;
@@ -67,7 +67,8 @@ public class Game {
 		while(scenelist.get(scenelist.size()-1).getStatus().equals("ongoing"))
 		{
 			Scene nextScene = new Scene(scenelist.get(scenelist.size()-1));
-			nextScene.nextScene(ash.move(nextScene));
+			String move = ash.move(nextScene);
+			nextScene.nextScene(move);
 			scenelist.add(nextScene);
 		}
 

@@ -37,8 +37,8 @@ public class SceneAPI extends Scene {
     private List<Zombie> zombiesToKillInNextTurn;
 
 
-    public SceneAPI(String filepath) {
-        super(filepath);
+    public SceneAPI(Scene s) {
+        super(s);
 
         humanToBeKilledInNextTurn = new ArrayList<>();
         zombiesKillingHumanInNextTurn = new ArrayList<>();
@@ -321,16 +321,15 @@ public class SceneAPI extends Scene {
        return target;
     }
 
-    public Map<String, Integer> moveToClosestZombie() {
+    public Zombie moveToClosestZombie() {
 
         HashMap<String, Integer> target = new HashMap<>();
         List<Agent> agents = new ArrayList<>();
         agents.addAll(getZombielist().values());
         Zombie zombie = (Zombie) closestToAsh(agents);
-        target.put("x", zombie.getX());
-        target.put("y", zombie.getY());
-
-        return target;
+//        target.put("x", zombie.getX());
+//        target.put("y", zombie.getY());
+        return zombie;
     }
 
 }
