@@ -54,7 +54,7 @@ public class Game {
 	public int totalscore;
 	public List<Scene> scenelist;
 	private static final int DEFAULT_STAGE = 1;
-	private static final String INIT_SCENE_FILE = "testcase/testcase7.txt";
+	private static final String INIT_SCENE_FILE = "testcase/testcase3.txt";
 	
 	public Game(Scene s){
 		totalscore = 0;
@@ -91,7 +91,7 @@ public class Game {
 
 		Game g = new Game(initialScene);
 
-        AshAi ai = null;
+        AshAi ai;
 
 		switch (stage) {
             case 1: ai = new AshAiDT();
