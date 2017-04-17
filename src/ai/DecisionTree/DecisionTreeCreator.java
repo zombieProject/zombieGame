@@ -12,7 +12,7 @@ public class DecisionTreeCreator {
 
     public DecisionTree createDecisionTree(Scene s) {
 
-        SceneAPI api = new SceneAPI(s.getFilePath());
+        SceneAPI api = new SceneAPI(s);
 
         // Action nodes
         Action moveToHumanCentroid = new Action(()-> api.moveToHumanCentroid());
@@ -61,8 +61,7 @@ public class DecisionTreeCreator {
         // Main tree
         DecisionTree tree = new DecisionTree(
                 canHumanBekilledInNextTurn, canAshSaveHumanInThisTurnD, canAshKillZombiesInThisTurnD);
-
-
+        
         return tree;
     }
 

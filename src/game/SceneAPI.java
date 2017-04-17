@@ -37,8 +37,8 @@ public class SceneAPI extends Scene {
     private List<Zombie> zombiesToKillInNextTurn;
 
 
-    public SceneAPI(String filepath) {
-        super(filepath);
+    public SceneAPI(Scene s) {
+        super(s);
 
         humanToBeKilledInNextTurn = new ArrayList<>();
         zombiesKillingHumanInNextTurn = new ArrayList<>();
