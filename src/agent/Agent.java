@@ -9,7 +9,7 @@ public class Agent {
 	int x;
 	int y;
 	
-	//
+	// the degree to turn around
 	
 	double rotate = 0;
 	

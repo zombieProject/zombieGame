@@ -8,14 +8,24 @@ import javafx.scene.text.Text;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
+// This class is designed for user experience.
+// The control bar can make game go to the next scene,
+//    the previous scene, or automatically go through
+//	  scenes.
+
 public class ControlBar {
+	
     private final Text text;
-    private final HBox hBox;
-    private final Button prevBtn;
-    private final Button nextBtn;
-    private final Button playBtn;
+    private final HBox hBox;		// box container
+    private final Button prevBtn;	// button for previous scene
+    private final Button nextBtn;	// button for next scene
+    private final Button playBtn;	// button for automatically play
     private AtomicBoolean isPlaying = new AtomicBoolean(false);
 
+    
+    // Constructor for ControlBar
+    
     public ControlBar(){
         hBox = new HBox();
         hBox.setAlignment(Pos.CENTER);
