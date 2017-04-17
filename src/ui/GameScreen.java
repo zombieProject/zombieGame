@@ -92,6 +92,9 @@ public class GameScreen {
         updateImageViewList(zombieViews, scene.getZombielist().values(), true);
 
         placeImageView(ashView, scene.getAsh());
+
+        gc.setFill(Color.RED);
+        gc.fillText("score: " + scene.getScore(), scale(padding), scale(Scene.DOWN));
     }
 
     public double getWidth(){
