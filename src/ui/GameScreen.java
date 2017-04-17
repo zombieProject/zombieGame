@@ -10,11 +10,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import static ui.RootUI.padding;
-import static ui.RootUI.radius;
-import static ui.RootUI.scale;
+import static ui.RootUI.*;
 
 public class GameScreen {
     private static final double pad = scale(padding);
@@ -23,8 +22,8 @@ public class GameScreen {
     private Canvas canvas;
 
     // cached Images for showing
-    private HashMap<Integer, ImageView> zombieViews;
-    private HashMap<Integer, ImageView> humanViews;
+    private ArrayList<ImageView> zombieViews;
+    private ArrayList<ImageView> humanViews;
     private ImageView ashView;
 
     public GameScreen(){
@@ -36,8 +35,8 @@ public class GameScreen {
         group.resize(canvas.getWidth(), canvas.getHeight());
 
         // initiate views
-        zombieViews = new HashMap<>();
-        humanViews = new HashMap<>();
+        zombieViews = new ArrayList<>();
+        humanViews = new ArrayList<>();
         ashView = new ImageView(RootUI.ashImage);
         group.getChildren().add(ashView);
 
@@ -46,10 +45,8 @@ public class GameScreen {
 
     public static void scaleHeight(ImageView imageView, double height){
         height = scale(height);
-        double rate = height / imageView.getFitHeight();
         imageView.setPreserveRatio(true);
         imageView.setFitHeight(height);
-//        imageView.setFitWidth(imageView.getFitWidth() * rate);
     }
 
     public void appendToPane(Pane pane){
@@ -65,42 +62,36 @@ public class GameScreen {
         drawCircle(gc, agent.getX(), agent.getY(), RootUI.radius);
     }
 
-    public static void placeImageView(ImageView imageView, double x, double y){
+    public static void placeImageView(ImageView imageView, double x, double y, double rotate){
         x = scale(x);
         y = scale(y);
         double r = scale(radius);
 
         imageView.setLayoutX(x + pad - r);
         imageView.setLayoutY(y + pad - r);
+
+        imageView.setRotate(rotate);
     }
 
     public static void placeImageView(ImageView imageView, Agent agent){
-        placeImageView(imageView, agent.getX(), agent.getY());
+        placeImageView(imageView, agent.getX(), agent.getY(), agent.getRotate());
     }
 
     public void drawScene(Scene scene){
         double r = scale(radius);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, canvas.getWidth() + pad * 2, canvas.getHeight() + pad * 2);
         gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, canvas.getWidth() + pad * 2, canvas.getHeight() + pad * 2);
+        gc.setFill(Color.WHITE);
         gc.fillRect(pad + 0, pad + 0, scale(Scene.RIGHT), scale(Scene.DOWN));
 
         gc.setFill(new Color(0, 0, 1.0, 0.4));
         drawCircle(gc, scene.getAsh().getX(), scene.getAsh().getY(), Scene.SHOOTING_RANGE);
 
-        gc.setFill(Color.YELLOW);
-        drawAgent(gc, scene.getAsh());
+        updateImageViewList(humanViews, scene.getHumanlist().values(), false);
+        updateImageViewList(zombieViews, scene.getZombielist().values(), true);
+
         placeImageView(ashView, scene.getAsh());
-        ashView.setRotate(scene.getAsh().getRotate());
-        gc.setFill(Color.RED);
-        for(Agent zombie : scene.getZombielist().values()){
-            drawAgent(gc, zombie);
-        }
-        gc.setFill(Color.GREEN);
-        for(Agent human : scene.getHumanlist().values()){
-            drawAgent(gc, human);
-        }
     }
 
     public double getWidth(){
@@ -109,5 +100,38 @@ public class GameScreen {
 
     public double getHeight(){
         return canvas.getHeight();
+    }
+
+    private void updateImageViewList(ArrayList<ImageView> imageViews, Collection<? extends Agent> agents, boolean isZombie){
+        int i = 0;
+        for(Agent agent : agents){
+            ImageView imageView;
+
+            // first getImageView
+            if (imageViews.size() <= i){
+                // in this case, crete a new one
+                if(isZombie){
+                    imageView = new ImageView(RootUI.zombieImage);
+                    scaleHeight(imageView, 800);
+                }else{
+                    imageView = new ImageView(RootUI.humanImage);
+                    scaleHeight(imageView, 800);
+                }
+                group.getChildren().add(imageView);
+                imageViews.add(imageView);
+            }else{
+                // in this case, get one from exist one
+                imageView = imageViews.get(i);
+            }
+
+            placeImageView(imageView, agent);
+            i++;
+        }
+
+        // then remove all other unused ones
+        while (i < imageViews.size()){
+            ImageView view = imageViews.remove(imageViews.size() - 1);
+            group.getChildren().remove(view);
+        }
     }
 }
