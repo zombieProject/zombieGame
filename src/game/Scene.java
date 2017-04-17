@@ -34,10 +34,6 @@ public class Scene {
 	Map<Integer, Human> humanlist;
 	int score;
 
-    public String getFilePath() {
-        return filePath;
-    }
-
 	public String getStatus(){
 		return status;
 	}
