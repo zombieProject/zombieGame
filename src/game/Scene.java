@@ -1,21 +1,14 @@
 package game;
 
 import agent.*;
+import game.debug.DebugGraphs;
+import game.debug.EmptyOutputStream;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import agent.Agent;
-import agent.Agents;
-import agent.Ash;
-import agent.Human;
-import agent.Zombie;
 
 
 public class Scene {
@@ -26,6 +19,7 @@ public class Scene {
 	public static final int ZOMBIE_LIMIT = 400;
 	public static final int ASH_LIMIT = 1000;
 	public static final int SHOOTING_RANGE = 2000;
+
     private String filePath;
     private String status;
 	Ash ash;
@@ -33,8 +27,46 @@ public class Scene {
 	Map<Integer,Zombie> zombienextlist;
 	Map<Integer, Human> humanlist;
 	int score;
+	private boolean debugMode = false;
 
-    public String getFilePath() {
+	// debug related information
+	private static PrintStream debugTextDisable = createPrintStream(new EmptyOutputStream());
+	private ByteArrayOutputStream byteArrayOutputStream = null;
+	private PrintStream debugTextEnable = null;
+	private DebugGraphs debugGraphs = new DebugGraphs(this);
+
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+
+	public void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
+		if(!debugMode) return;
+		if(byteArrayOutputStream == null){
+			byteArrayOutputStream = new ByteArrayOutputStream();
+			debugTextEnable = createPrintStream(byteArrayOutputStream);
+		}
+	}
+
+	public PrintStream debugInfo(){
+		if(debugMode) return debugTextEnable;
+		else return debugTextDisable;
+	}
+
+	public DebugGraphs getDebugGraphs() {
+		return debugGraphs;
+	}
+
+	public String getDebugText(){
+		if(byteArrayOutputStream == null) return null;
+		try {
+			return byteArrayOutputStream.toString("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String getFilePath() {
         return filePath;
     }
 
@@ -333,5 +365,11 @@ public class Scene {
 
 	}
 
-
+	public static PrintStream createPrintStream(OutputStream outputStream){
+		try {
+			return new PrintStream(outputStream, true, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -2,6 +2,7 @@ package ui;
 
 import agent.Agent;
 import game.Scene;
+import game.debug.GraphToken;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -9,6 +10,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +29,8 @@ public class GameScreen {
     private ArrayList<ImageView> zombieViews;
     private ArrayList<ImageView> humanViews;
     private ImageView ashView;
+    private Stage debugStage;
+    private Text debugText;
 
     public GameScreen(){
         canvas = new Canvas(scale(Scene.RIGHT + RootUI.padding * 2), scale(Scene.DOWN + RootUI.padding * 2));
@@ -41,6 +47,11 @@ public class GameScreen {
         group.getChildren().add(ashView);
 
         scaleHeight(ashView, 800);
+
+        // initial debug stage
+        debugText = new Text();
+        debugStage = new Stage();
+        debugStage.setScene(new javafx.scene.Scene(new TextFlow(debugText)));
     }
 
     public static void scaleHeight(ImageView imageView, double height){
@@ -95,6 +106,19 @@ public class GameScreen {
 
         gc.setFill(Color.RED);
         gc.fillText("score: " + scene.getScore(), scale(padding), scale(Scene.DOWN));
+
+        for(GraphToken token : scene.getDebugGraphs()){
+            token.print(gc);
+        }
+
+        String texts = scene.getDebugText();
+        if(texts == null){
+            debugStage.hide();
+        }else {
+            debugText.setText(texts);
+            debugStage.sizeToScene();
+            debugStage.show();
+        }
     }
 
     public double getWidth(){
