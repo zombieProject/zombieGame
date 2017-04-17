@@ -1,11 +1,13 @@
 package agent;
 
 public class Zombie extends Agent {
-//	boolean live;
+
+	// Constructors for Zombie
+	
 	Zombie(int x, int y){
 		this.x = x;
 		this.y = y;
-//		live = true;
+
 	}
 	
 	public Zombie(Zombie z){
@@ -14,8 +16,8 @@ public class Zombie extends Agent {
 		this.rotate = z.rotate;
 	}
 	
-	public void killed(){
-//		live = false;
-	}
+/*	public void killed(){
+
+	} */
 
 }

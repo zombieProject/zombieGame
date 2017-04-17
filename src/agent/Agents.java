@@ -2,6 +2,9 @@ package agent;
 
 public class Agents {
 	
+	// make use of static factory design pattern
+	// using static methods to create an object
+	
 	public static Ash makeAsh(int x, int y){
 		return new Ash( x, y);
 	}  

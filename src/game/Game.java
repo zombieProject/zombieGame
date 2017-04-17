@@ -54,7 +54,7 @@ public class Game {
 	public int totalscore;
 	public List<Scene> scenelist;
 	private static final int DEFAULT_STAGE = 1;
-	private static final String INIT_SCENE_FILE = "testcase/testcase3.txt";
+	private static final String INIT_SCENE_FILE = "testcase/testcase10.txt";
 	
 	public Game(Scene s){
 		totalscore = 0;

@@ -5,11 +5,11 @@ import java.util.Random;
 public class Human extends Agent {
 	private static final Random random = new Random();
 
-//	boolean live;
+	// Constructors for Human
+	
 	Human (int x, int y){
 		this.x = x;
 		this.y = y;
-//		live = true;
 		rotate = random.nextInt(360);
 	}
 	
@@ -19,8 +19,8 @@ public class Human extends Agent {
 		this.rotate = h.rotate;
 	}
 	
-	public void killed(){
-//		live = false;
-	}
+/*	public void killed(){
+		
+	}*/
 
 }

@@ -3,7 +3,18 @@ package agent;
 import ui.RootUI;
 
 public class Agent {
+	
+	// x and y are coordination
+	
 	int x;
+	int y;
+	
+	//
+	
+	double rotate = 0;
+	
+	// getter and setter
+	
 	public int getX() {
 		return x;
 	}
@@ -20,14 +31,13 @@ public class Agent {
 		this.y = y;
 	}
 
-	int y;
-
-	double rotate = 0;
-
 	public double getRotate() {
 		return rotate;
 	}
 
+	
+	// methods determine if the agent is zombie, human or Ash
+	
 	public boolean isZombie(){
 		return this instanceof Zombie;
 
