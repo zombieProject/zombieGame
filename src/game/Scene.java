@@ -20,13 +20,15 @@ public class Scene {
 	public static final int ASH_LIMIT = 1000;
 	public static final int SHOOTING_RANGE = 2000;
 
+	int score;
     private String filePath;
     private String status;
+    
 	Ash ash;
 	Map<Integer,Zombie> zombielist;
 	Map<Integer,Zombie> zombienextlist;
 	Map<Integer, Human> humanlist;
-	int score;
+	
 	private boolean debugMode = false;
 
 	// debug related information
@@ -95,6 +97,11 @@ public class Scene {
 		return humanlist;
 	}
 	
+	
+	// Constructors for Scene
+	
+	// use Scene object as argument
+	
 	public Scene(Scene s){
 
 	    filePath = s.filePath;
@@ -121,7 +128,14 @@ public class Scene {
 		
 	}
 
+	// use filepath as argument
+	
 	public Scene(String filepath){
+		
+		// In each file, the first line is Ash's data,
+		//    the second line is Zombie's data,
+		//	  the third line is Human's data.
+		
 		score = 0;
 		zombielist = new HashMap<Integer, Zombie>();
         zombienextlist = new HashMap<Integer, Zombie>();
@@ -181,6 +195,9 @@ public class Scene {
 		ashMove(ashmove);
 		ashKillZombie();
 		zombieKillHuman();
+		
+		// determine if Ash win the game
+		
 		if(zombienextlist.isEmpty()){
 			status = "pass";
 		}else if(humanlist.isEmpty()){
@@ -189,6 +206,7 @@ public class Scene {
 	}
 	
 	public List<Integer> outGameSequence(){
+		
 		List<Integer> sequence = new ArrayList<Integer>();
 		//add ash
 		sequence.add(ash.getX());

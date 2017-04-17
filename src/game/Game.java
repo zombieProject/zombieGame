@@ -53,8 +53,18 @@ public class Game {
 
 	public int totalscore;
 	public List<Scene> scenelist;
+	
+	// 1 represents decision tree
+	// 2 represents Monte Carlo
+	// 3 represents Maxmin
+	
 	private static final int DEFAULT_STAGE = 1;
+	
+	// can change to any testcases in the testcase
+	
 	private static final String INIT_SCENE_FILE = "testcase/testcase10.txt";
+	
+	// Constructor
 	
 	public Game(Scene s){
 		totalscore = 0;
@@ -64,8 +74,11 @@ public class Game {
 	
 	
 	public void run(AshAi ash){
+		
 		while(scenelist.get(scenelist.size()-1).getStatus().equals("ongoing"))
 		{
+			// if the last scene's status is still ongoing
+			
 			Scene nextScene = new Scene(scenelist.get(scenelist.size()-1));
 			nextScene.nextScene(ash.move(nextScene));
 			scenelist.add(nextScene);
