@@ -31,7 +31,6 @@ public abstract class GameTest {
 
     }
 
-
     @AfterClass
     public static void printScore(){
         System.out.println("Total Score: " + score);
@@ -79,22 +78,26 @@ public abstract class GameTest {
         initGameEnvironment(8);
         score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
+    }
+    @Test
     public void gameScenario9(){
         initGameEnvironment(9);
         score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
+    }
+    @Test
     public void gameScenario10(){
         initGameEnvironment(10);
         score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
+    }
+    @Test
     public void gameScenario11(){
         initGameEnvironment(11);
         score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
+    }
+    @Test
     public void gameScenario12(){
         initGameEnvironment(12);
         score = score + gameScene.getScore();
@@ -119,31 +122,6 @@ public abstract class GameTest {
         initGameEnvironment(16);
         score = score + gameScene.getScore();
         assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
-    public void gameScenario17(){
-        initGameEnvironment(17);
-        score = score + gameScene.getScore();
-        assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
-    public void gameScenario18(){
-        initGameEnvironment(18);
-        assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
-    public void gameScenario19(){
-        initGameEnvironment(19);
-        score = score + gameScene.getScore();
-        assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
-    public void gameScenario20(){
-        initGameEnvironment(20);
-        score = score + gameScene.getScore();
-        assertEquals(message, gameScene.getStatus(), "pass");
-    }@Test
-    public void gameScenario21() {
-        initGameEnvironment(21);
-        score = score + gameScene.getScore();
-        assertEquals(message, gameScene.getStatus(), "pass");
-
     }
 
 }
