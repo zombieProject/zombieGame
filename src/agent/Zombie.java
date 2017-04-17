@@ -11,6 +11,7 @@ public class Zombie extends Agent {
 	public Zombie(Zombie z){
 		this.x = z.x;
 		this.y = z.y;
+		this.rotate = z.rotate;
 	}
 	
 	public void killed(){

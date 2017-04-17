@@ -1,5 +1,7 @@
 package agent;
 
+import ui.RootUI;
+
 public class Agent {
 	int x;
 	public int getX() {
@@ -19,6 +21,12 @@ public class Agent {
 	}
 
 	int y;
+
+	double rotate = 0;
+
+	public double getRotate() {
+		return rotate;
+	}
 
 	public boolean isZombie(){
 		return this instanceof Zombie;
@@ -41,7 +49,10 @@ public class Agent {
 		return "Agent [x=" + x + ", y=" + y + "]";
 	}
 
-	public void setDestination(int x,int y){
+	public void setDestination(int x, int y){
+		if(this.x == x && this.y == y) return;
+		rotate = RootUI.getRotation(this.x, this.y, x, y);
+
 		this.x = x;
 		this.y = y;
 	}
