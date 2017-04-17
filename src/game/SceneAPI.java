@@ -3,7 +3,9 @@ package game;
 import agent.Agent;
 import agent.Human;
 import agent.Zombie;
+import ai.AshAiDT;
 
+import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -23,6 +25,8 @@ public class SceneAPI extends Scene {
 
     private List<Human>  humanToBeKilledInNextTurn;
     private List<Zombie> zombiesKillingHumanInNextTurn;
+    private List<HumanZombiePair> pair;
+    private PrintStream out;
 
     // list has all the humans that can be saved
     // by Ash
@@ -39,12 +43,15 @@ public class SceneAPI extends Scene {
 
     public SceneAPI(Scene s) {
         super(s);
+        s.setDebugMode(true);
+        out = s.debugInfo();
 
         humanToBeKilledInNextTurn = new ArrayList<>();
         zombiesKillingHumanInNextTurn = new ArrayList<>();
         humanToBeSavedInThisTurn = new ArrayList<>();
         zombiesToKillInThisTurn = new ArrayList<>();
         zombiesToKillInNextTurn = new ArrayList<>();
+        pair = new ArrayList<>();
 
         setHumanZombieKillingsInNextTurn();
         setHumansToSaveInThisTurn();
@@ -60,6 +67,17 @@ public class SceneAPI extends Scene {
      */
 
 
+    class HumanZombiePair{
+        public Human human;
+        public Zombie zombie;
+
+        public HumanZombiePair(Human h, Zombie z) {
+            human = h;
+            zombie = z;
+        }
+
+    }
+
     // Sets humanToBeKilledInNextTurn
     // Sets zombiesKillingHumanInNextTurn
     private void setHumanZombieKillingsInNextTurn() {
@@ -73,7 +91,9 @@ public class SceneAPI extends Scene {
             for(Map.Entry<Integer, Zombie> zombieEntry: getZombielist().entrySet()) {
 
                 Zombie zombie = zombieEntry.getValue();
-                if(human.getX() == zombie.getX() && human.getY() == zombie.getY()) {
+
+                if(human.getX() == zombie.getX() && human.getY() == zombie.getY()
+                        || distance(human.getX(), human.getY(), zombie.getX(), zombie.getY()) < 600) {
                     // same x, y coordinates for human and this zombie
 
                     // humans that will be killed by zombies when their turn comes
@@ -81,6 +101,8 @@ public class SceneAPI extends Scene {
 
                    // zombies that will be killing these humans in their next turn
                    zombiesKillingHumanInNextTurn.add(zombie);
+
+                   pair.add(new HumanZombiePair(human, zombie));
                 }
             }
 
@@ -89,19 +111,38 @@ public class SceneAPI extends Scene {
 
     }
 
+
     // Sets humanToBeSavedInThisTurn, humans that can be saved in this step of Ash
     // These are the humans that can be killed in the next turn by the zombies
     private void setHumansToSaveInThisTurn() {
 
-        for(Human human : humanToBeKilledInNextTurn) {
+        for(HumanZombiePair p: pair) {
 
-            double humanAshDistance = distance(ash.getX(), ash.getY(), human.getX(), human.getY());
+            double d1 = distance(p.zombie.getX(), p.zombie.getY(), p.human.getX(), p.human.getY());
 
-            if(humanAshDistance < 3000) {
-                humanToBeSavedInThisTurn.add(human);
+            double d2 = distance(ash.getX(), ash.getY(), p.human.getX(), p.human.getY());
 
+            int zombieSteps = (int) d1/400;
+            int ashSteps = (int) d1/3000;
+
+            if(ashSteps <= zombieSteps) {
+                // ash can reach this human
+
+                if(!humanToBeSavedInThisTurn.contains(p.human)) {
+                    humanToBeSavedInThisTurn.add(p.human);
+                }
             }
         }
+
+//       for(Human human : humanToBeKilledInNextTurn) {
+//
+//            double humanAshDistance = distance(ash.getX(), ash.getY(), human.getX(), human.getY());
+//
+//            if(humanAshDistance < 3000) {
+//                humanToBeSavedInThisTurn.add(human);
+//
+//            }
+//        }
     }
 
 
@@ -236,6 +277,7 @@ public class SceneAPI extends Scene {
 
         coord.put("x", humanToSave.getX());
         coord.put("y", humanToSave.getY());
+        out.println("saveHumanInThisTurn");
 
         return coord;
     }
@@ -247,6 +289,9 @@ public class SceneAPI extends Scene {
         Zombie zombieToKill = killZombie(1);
         coord.put("x", zombieToKill.getX());
         coord.put("y", zombieToKill.getY());
+
+        out.println("killZombieInThisTurn");
+
         return coord;
     }
 
@@ -255,6 +300,8 @@ public class SceneAPI extends Scene {
         Zombie zombieToKill = killZombie(2);
         coord.put("x", zombieToKill.getX());
         coord.put("y", zombieToKill.getY());
+
+        out.println("killzombieInNextTurn");
         return coord;
     }
 
@@ -287,6 +334,7 @@ public class SceneAPI extends Scene {
             location.put("y", 0);
         }
 
+        out.println("moveForBetterFuture");
         return location;
 
     }
@@ -306,31 +354,95 @@ public class SceneAPI extends Scene {
 
         target.put("x", totalX/getHumanlist().size());
         target.put("y", totalY/getHumanlist().size());
+
+        out.println("moveToHumanCentroid");
         return target;
     }
 
     public Map<String, Integer> moveToClosestHuman() {
 
         HashMap<String, Integer> target = new HashMap<>();
-       List<Agent> agents = new ArrayList<>();
-       agents.addAll(getHumanlist().values());
-       Human human = (Human) closestToAsh(agents);
-       target.put("x", human.getX());
-       target.put("y", human.getY());
+        List<Agent> agents = new ArrayList<>();
+        List<Human> humansToSave = new ArrayList<>();
 
-       return target;
+        agents.addAll(getHumanlist().values());
+        agents.sort((o1, o2) -> {
+            return (int) (distance(getAsh().getX(), getAsh().getY(), o1.getX(), o1.getY()) -
+                    distance(getAsh().getX(), getAsh().getY(), o2.getX(), o2.getY()));});
+
+        agents.forEach((h) -> {
+            boolean danger = false;
+            double distanceFromAsh = distance(getAsh().getX(), getAsh().getY(), h.getX(), h.getY());
+            int as = (int) distanceFromAsh/3000;
+            for (Zombie z : getZombielist().values()) {
+                double distance = distance(h.getX(), h.getY(), z.getX(), z.getY());
+
+                int zs = (int) distance/400;
+
+                if (as > zs) {
+                    danger = true;
+                    break;
+                }
+            }
+            if (!danger) {
+                humansToSave.add((Human) h);
+            }
+        });
+
+        Human closestHumanInDanger = null;
+
+        if(humansToSave.size() > 0) {
+            closestHumanInDanger = humansToSave.get(0);
+        } else {
+            List<Agent> a = new ArrayList<>();
+            a.addAll(getHumanlist().values());
+            closestHumanInDanger = (Human) closestToAsh(a);
+        }
+
+
+
+//        Agent agent = null;
+//        Zombie closestZombie = moveToClosestZombie();
+//        Human closestHuman = humansToSave.get(0);
+//        if (humansToSave.size() > 0) {
+//            double humanAshDistance = distance(closestHuman.getX(), closestHuman.getY(), getAsh().getX(), getAsh()
+//                    .getY());
+//            double zombieAshDistance = distance(closestZombie.getX(), closestZombie.getY(), getAsh().getX(), getAsh()
+//                    .getY());
+//            if(humanAshDistance < zombieAshDistance) {
+//                agent = closestHuman;
+//            } else {
+//                agent = closestZombie;
+//            }
+//
+//        } else {
+//            agent = closestZombie;
+//
+//        }
+
+//            Human human = (Human) closestToAsh(agents);
+//            target.put("x", human.getX());
+//            target.put("y", human.getY());
+//
+        out.println("moveToClosestHuman");
+
+        target.put("x", closestHumanInDanger.getX());
+        target.put("y", closestHumanInDanger.getY());
+        return target;
     }
 
-    public Map<String, Integer> moveToClosestZombie() {
+    public Zombie moveToClosestZombie(){
 
-        HashMap<String, Integer> target = new HashMap<>();
-        List<Agent> agents = new ArrayList<>();
-        agents.addAll(getZombielist().values());
-        Zombie zombie = (Zombie) closestToAsh(agents);
-        target.put("x", zombie.getX());
-        target.put("y", zombie.getY());
+            HashMap<String, Integer> targetZombie = new HashMap<>();
 
-        return target;
+            List<Agent> agents = new ArrayList<>();
+            agents.addAll(getZombielist().values());
+            Zombie zombie = (Zombie) closestToAsh(agents);
+//            target.put("x", zombie.getX());
+//            target.put("y", zombie.getY());
+
+            //out.println("moveToClosestZombie");
+            return zombie;
     }
 
 }
