@@ -6,6 +6,8 @@ package ai.DecisionTree;
 
 abstract class  NodeImplementer implements Node {
 
+	// Return true iff this is a Condition or Action
+	
     public boolean isCondition() {
         return (this instanceof Condition);
     }
