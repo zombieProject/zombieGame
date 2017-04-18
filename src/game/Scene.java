@@ -232,17 +232,26 @@ public class Scene {
 	}
 	
 
+	// This method is used to find agent who is in smallest distance
 	
 	private Agent findTarget(Agent a){
+		
 		double distance = Integer.MAX_VALUE;
 		Agent target = new Agent();
+		
 		for (Map.Entry<Integer, Human> entry : humanlist.entrySet()){
 			double d = distance(a.getX(),a.getY(),entry.getValue().getX(),entry.getValue().getY());
 			if (d<distance){
+				
+				// find the smallest distance between Agent a and a human
+				
 				distance = d;
 				target = entry.getValue();
 			}			
 		}
+		
+		// compute the distance between Agent a and Ash
+		
 		if(distance > distance(a.getX(),a.getY(),ash.getX(),ash.getY())){
 			target = ash;
 		}
@@ -260,6 +269,9 @@ public class Scene {
 	
 	private void zombieMove(){
         for (Map.Entry<Integer, Zombie> entry : zombielist.entrySet()) {
+        	
+        	// find the target that the zombie will move to
+        	
 			Agent target = findTarget(entry.getValue());
 			move(entry.getValue(),target.getX(),target.getY());
 			
@@ -269,9 +281,13 @@ public class Scene {
 	public void updateZombieNextMove() {
 
 	    // Next predicted move will always be based on the first move
+		
 	    HashMap<Integer, Zombie> zombiesNextList = new HashMap<>();
 
+	    // All zombies move together in each turn
+	    
         for (Map.Entry<Integer, Zombie> entry : zombielist.entrySet()) {
+        	
             Zombie copyOfZombie = new Zombie(entry.getValue());
             Agent target = findTarget(copyOfZombie);
             move(copyOfZombie,target.getX(),target.getY());
@@ -283,15 +299,28 @@ public class Scene {
 	private void move(Agent a, int x, int y){
 		int limit;
 
+		// Just Ash and Zombies can make movement
+		
 		if(a.isAsh()) {
+			
+			// Ash moves exact 1000 units
 			limit = ASH_LIMIT;
+			
 		} else {
+			
+			// Zombie moves exact 400 units
 			limit = ZOMBIE_LIMIT;
 		}
 
 		if(distance(a.getX(),a.getY(),x,y) < limit) {
+			
+			// if the distance is smaller than limit, then the agent moves onto target coordination
 			a.setDestination(x, y);
+			
 		} else {
+			
+			// else change agent's coordination
+			
 			double offsetx = offsetX(limit,a.getX(),a.getY(),x,y);
 			if(a.getX()>x){
 				offsetx = -offsetx;
@@ -305,12 +334,14 @@ public class Scene {
 		}
 	}
 	
+	// Helper methods for calculation
 	
 	public double offsetX(int bevel, int x1,int y1, int x2, int y2){
 		if(y1 == y2){
 			return bevel;
+			
 		}else{
-		return bevel*Math.sin(Math.atan((double)(Math.abs(((double)x1-(double)x2)/((double)y1-(double)y2)))));
+			return bevel*Math.sin(Math.atan((double)(Math.abs(((double)x1-(double)x2)/((double)y1-(double)y2)))));
 		}
 	}
 	
@@ -318,7 +349,7 @@ public class Scene {
 		if(y1 == y2){
 			return 0;
 		}else{
-		return bevel*Math.cos(Math.atan((double)(Math.abs(((double)x1-(double)x2)/((double)y1-(double)y2)))));
+			return bevel*Math.cos(Math.atan((double)(Math.abs(((double)x1-(double)x2)/((double)y1-(double)y2)))));
 		}
 	}
 	
@@ -326,11 +357,19 @@ public class Scene {
 		return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 	}
 	
+	
+	// This method calculates scores when Ash kills zombies
+	
 	private void ashKillZombie(){
+		
 		int killcount = 0;
 		int zombieworth = humanlist.size()*10;
 		Map<Integer, Zombie> copyzombienextlist = new HashMap<Integer,Zombie>(zombienextlist);
+		
 		for (Map.Entry<Integer, Zombie> entry : copyzombienextlist.entrySet()){
+			
+			// Ash can kill any zombies in the range of 2000 units
+			
 			if(distance(ash.getX(),ash.getY(),entry.getValue().getX(),entry.getValue().getY())<=SHOOTING_RANGE){
 				zombienextlist.remove(entry.getKey());
 				zombielist.remove(entry.getKey());
@@ -342,12 +381,17 @@ public class Scene {
 	
 	private void zombieKillHuman(){
 
+		// The human are killed when human and zombies have the same coordination
+		
 	    Map<Integer, Human> humansKilled = new HashMap<>(humanlist);
 
 		for (Map.Entry<Integer, Zombie> entryz : zombienextlist.entrySet()){
+			
 			for (Map.Entry<Integer, Human> entryh : humansKilled.entrySet()){
+				
 				if(entryz.getValue().getX()==entryh.getValue().getX()&&
 						entryz.getValue().getY()==entryh.getValue().getY()){
+					
                     humanlist.remove(entryh.getKey());
 				}
 			}		
@@ -356,6 +400,7 @@ public class Scene {
 	
 	
 	// n>=1,1, 2, 3, 5, 8
+	
 	private int fibonacci(int n){
 		if (n==1){
 			return 1;
@@ -367,7 +412,7 @@ public class Scene {
 	}
 	
 	
-	
+	// Test
 	
 	public static void main(String args[]){
 		Scene s1 = new Scene("testcase/testcase1.txt");
