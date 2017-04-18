@@ -1,12 +1,13 @@
 package game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ai.AshAi;
 import ai.AshAiDT;
 import ai.AshAiMC;
+import ai.AshAiMM;
 import ui.RootUI;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Game {
 //	The game is played in a zone 16000 units wide by 9000 units high. You control a man named Ash, wielding a gun that lets him kill any zombie within a certain range around him.
@@ -111,8 +112,10 @@ public class Game {
             break;
             case 2: ai = new AshAiMC();
             break;
+			case 3: ai = new AshAiMM();
+			break;
             default:
-                throw new RuntimeException("illegal stage specified. Stage can be any one of [1, 2]");
+                throw new RuntimeException("illegal stage specified. Stage can be any one of [1, 2, 3]");
         }
 		g.run(ai);
 		RootUI.createGUI(g.scenelist);
