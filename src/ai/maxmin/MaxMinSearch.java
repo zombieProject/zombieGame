@@ -35,6 +35,7 @@ public class MaxMinSearch {
             if(score > bestScore){
                 bestScore = score;
                 bestMove = move;
+                strategy.heuristic(newScene, scene);
             }
         }
         return bestMove;

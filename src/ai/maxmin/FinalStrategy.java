@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FinalStrategy implements SearchStrategy {
+    public static boolean print = false;
+
     @Override
     public int heuristic(Scene scene, Scene origin) {
         Human human = NearestHumanStrategy.getNearestHuman(
@@ -19,14 +21,15 @@ public class FinalStrategy implements SearchStrategy {
         int distance;
 
         if(human == null){
-            distance = 1000000000;
+            return -100000;
         }else{
-            distance = distance(scene.getAsh().getX(), scene.getAsh().getY(), human) + 1;
+            distance = distance(scene.getAsh().getX(), scene.getAsh().getY(), human);
+            distance = Math.max(distance, 1000);
         }
 
         return (
-                (scene.getScore() - origin.getScore()) * 100
-                + scene.getHumanlist().size() * 50
+                scene.getScore() * 100
+                + scene.getHumanlist().size() * 1000
                 + Math.min(1000, 1000000 / distance)
         );
     }
