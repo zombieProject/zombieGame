@@ -59,11 +59,15 @@ public class Game {
 	// 2 represents Monte Carlo
 	// 3 represents Maxmin
 	
+	
+	//private static final int DEFAULT_STAGE = 1;
+	//private static final int DEFAULT_STAGE = 2;
 	private static final int DEFAULT_STAGE = 3;
 	
 	// can change to any testcases in the testcase
 	
-	private static final String INIT_SCENE_FILE = "testcase/testcase10.txt";
+	private static final String INIT_SCENE_FILE = "testcase/testcase8.txt";
+	
 	
 	// Constructor
 	
