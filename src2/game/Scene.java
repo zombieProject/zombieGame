@@ -58,6 +58,10 @@ public class Scene {
 		return humanlist;
 	}
 	
+	public Scene(){
+		
+	}
+	
 	public Scene(Scene s){
 		score = s.score;
 		ash = new Ash(s.getAsh());
@@ -117,6 +121,30 @@ public class Scene {
 		}
 		
 	}
+	public Scene sceneCopy(){
+		Scene copyscene = new Scene();
+		copyscene.score = this.score;
+		copyscene.ash = new Ash(this.getAsh());
+		
+		copyscene.zombielist = new HashMap<Integer,Zombie> ();
+		copyscene.zombienextlist = new HashMap<Integer,Zombie> ();
+		copyscene.humanlist = new HashMap<Integer,Human> ();
+		
+		for (Map.Entry<Integer, Zombie> entry : this.getZombieNextlist().entrySet()){
+			copyscene.zombielist.put(entry.getKey(), new Zombie(entry.getValue()));
+		}
+		
+		for (Map.Entry<Integer, Zombie> entry : this.getZombieNextlist().entrySet()){
+			copyscene.zombienextlist.put(entry.getKey(), new Zombie(entry.getValue()));
+		}
+		
+		for (Map.Entry<Integer, Human> entry : this.getHumanlist().entrySet()){
+			copyscene.humanlist.put(entry.getKey(), new Human(entry.getValue()));
+		}
+		
+		copyscene.status = this.getStatus();
+		return  copyscene;
+	}
 	
 	public void printScene(){
 		System.out.println("Ash: " + ash.toString());
@@ -128,7 +156,7 @@ public class Scene {
 		return status;
 	}
 	
-	public void nextScene(String ashmove){
+	public Scene nextScene(String ashmove){
 //		zombieMove();
 		ashMove(ashmove);
 		ashKillZombie();
@@ -138,6 +166,7 @@ public class Scene {
 		}else if(humanlist.isEmpty()){
 			status = "fail";
 		}
+		return this;
 	}
 	
 	public List<Integer> outGameSequence(){

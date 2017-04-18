@@ -80,8 +80,9 @@ public class Game {
 	
 	public void run(AshAiMC ash){
 		while(scenelist.get(scenelist.size()-1).getStatus().equals("ongoing"))
-		{
+		{	
 			Scene nextscene = new Scene(scenelist.get(scenelist.size()-1));
+			System.out.println("ash current location: "+ "x: "+ nextscene.getAsh().getX()+ "y: "+nextscene.getAsh().getY());
 			nextscene.nextScene(ash.move(nextscene));
 			scenelist.add(nextscene);
 			System.out.println("scene complete");

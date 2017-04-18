@@ -16,10 +16,11 @@ public class AshAiMC implements AshAi{
 	}
 	
 	public String move(Scene s){
-		scene = new Scene(s);
+		scene = s.sceneCopy();
 		MonteCarloSearchTree root = new MonteCarloSearchTree(scene);
 		//search depth, sample size
-		return root.getMove(5, 100);
+		return root.getMove(3, 100);
+		//return root.getMoveByProbability(4, 100);
 	}
 
 }
