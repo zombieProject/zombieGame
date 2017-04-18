@@ -102,7 +102,7 @@ public class Game {
 	        stage = DEFAULT_STAGE;
         } catch (Exception e) {
 
-            throw new RuntimeException("illegal stage specified. Stage can be any one of [1, 2]");
+            throw new RuntimeException("illegal stage specified. Stage can be any one of [1, 2, 3]");
         }
 
         Scene initialScene = new Scene(INIT_SCENE_FILE);
