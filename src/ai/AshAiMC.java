@@ -9,7 +9,7 @@ public class AshAiMC implements AshAi{
 		scene = new Scene(s);
 		MonteCarloSearchTree root = new MonteCarloSearchTree(scene);
 		//search depth, sample size
-		return root.getMove(5, 100);
+		return root.getMove(3,50);
 	}
 
 }
