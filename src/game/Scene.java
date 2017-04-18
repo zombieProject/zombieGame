@@ -321,6 +321,7 @@ public class Scene {
 			
 			// else change agent's coordination
 			
+			
 			double offsetx = offsetX(limit,a.getX(),a.getY(),x,y);
 			if(a.getX()>x){
 				offsetx = -offsetx;
