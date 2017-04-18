@@ -1,7 +1,6 @@
 package ai.montecarlo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,12 +10,11 @@ import game.Game;
 import game.Scene;
 
 public class MonteCarloSearchTree {
-	int firstMoveIndex;
 	Scene scene;
 	private MonteCarloSearchTree parent;
 	private int depth;
-	private int targetx;
-	private int targety;
+	private int x;
+	private int y;
 	List<MonteCarloSearchTree> childrenlist;
 	
 	public MonteCarloSearchTree(Scene s){
@@ -29,10 +27,9 @@ public class MonteCarloSearchTree {
 		scene = s;
 		parent = p;
 		depth = d;
-		targetx = fromx;
-		targety = fromy;		
+		x = fromx;
+		y = fromy;		
 		childrenlist = new ArrayList<MonteCarloSearchTree>();
-		firstMoveIndex = Integer.MAX_VALUE;
 	}
 	
 	public Scene getScene(){
@@ -43,12 +40,12 @@ public class MonteCarloSearchTree {
 		return depth;
 	}
 	
-	public int getTargetX(){
-		return targetx;
+	public int getX(){
+		return x;
 	}
 	
-	public int getTargetY(){
-		return targety;
+	public int getY(){
+		return y;
 	}
 	
 	public MonteCarloSearchTree getParent(){
@@ -58,23 +55,15 @@ public class MonteCarloSearchTree {
 	private void expand(int searchdepth, int samplesize){
 		if(depth < searchdepth&&scene.getStatus()=="ongoing"){
 			for(int i = 0; i< samplesize; i++){
-				Location location = MonteCarlo.randomLocation(scene.getAsh().getX(), scene.getAsh().getY());
-				int x =location.getX();
-				int y = location.getY();
+				int x = MonteCarlo.randomX()+scene.getAsh().getX();
+				int y = MonteCarlo.randomY()+scene.getAsh().getY();
 				String ashmove = String.valueOf(x);
 				ashmove += " ";
 				ashmove += String.valueOf(y);
-				Scene scenecopy = scene.sceneCopy();
+				Scene scenecopy = new Scene(scene);
 				scenecopy.nextScene(ashmove);
 				if(scenecopy.getStatus() != "fail"){
 					MonteCarloSearchTree child = new MonteCarloSearchTree(scenecopy, this, depth+1, x, y);
-					if(depth == 0)
-					{
-					child.setFirstMoveIndex(childrenlist.size());}
-					else
-					{
-						child.setFirstMoveIndex(firstMoveIndex);
-					}
 					childrenlist.add(child);
 				}	
 			}
@@ -83,18 +72,10 @@ public class MonteCarloSearchTree {
 		for(MonteCarloSearchTree tree : childrenlist){
 //			System.out.println("expand depth: " + this.getDepth());
 //			System.out.println("node count: " + childrenlist.size());
-			tree.expand(searchdepth, samplesize);
+			tree.expand(searchdepth, samplesize/4);
 		}
 	}
 	
-	public int getFirtsMoveIndex() {
-		return firstMoveIndex;
-	}
-
-	public void setFirstMoveIndex(int firsMoveIndex) {
-		this.firstMoveIndex = firsMoveIndex;
-	}
-
 	private List<MonteCarloSearchTree> getAllLeaf(List<MonteCarloSearchTree> leaflist){
 		if(childrenlist.isEmpty()){
 			leaflist.add(this);
@@ -109,88 +90,37 @@ public class MonteCarloSearchTree {
 	public String getMove(int searchdepth, int samplesize){
 		String move = null;
 		expand(searchdepth,samplesize);
-		List<MonteCarloSearchTree> leafs = new ArrayList<MonteCarloSearchTree>();
+		List<MonteCarloSearchTree> leafs = new ArrayList();
 		leafs = getAllLeaf(leafs);
 		
 		MonteCarloSearchTree bestresult = this;
 		int bestscore = Integer.MIN_VALUE;
 		for(MonteCarloSearchTree tree : leafs){
 			if(tree.getScene().getStatus() != "fail" && tree.getDepth()!=0){
-				if(tree.getScene().getScore() > bestscore)
+				if(tree.getScene().getScore() >= bestresult.getScene().getScore())
 				{
 					bestresult = tree;
-					bestscore = tree.getScene().getScore();
-				}else if(tree.getScene().getScore() == bestscore){
+				}else if(tree.getScene().getScore() == bestresult.getScene().getScore()){
 					if(tree.getDepth() < bestresult.getDepth()){
 						bestresult = tree;
-						bestscore = tree.getScene().getScore();
 					}
 				}
 			}
 		}
-		System.out.println("predict best score:  "+ bestscore);
-//		if(this.getScene().getScore() == bestresult.getScene().getScore()){
-//			return moveToHuman();
-//		}
-//		
-//		while(bestresult.getDepth() != 1&&bestresult.getDepth()!=0){
-//			bestresult = bestresult.getParent();
-//		}
-		
-		if(bestscore ==this.scene.getScore()||this.childrenlist.isEmpty()){
+		if(this.getScene().getScore() == bestresult.getScene().getScore()){
 			return moveToHuman();
 		}
-		else{
-		move = String.valueOf(this.childrenlist.get(bestresult.getFirtsMoveIndex()).getTargetX());
-		move += " ";
-		move += String.valueOf(this.childrenlist.get(bestresult.getFirtsMoveIndex()).getTargetY());
-		System.out.println("ash`s target: " + move.toString());
-		return move;
-		}
-
-	}
-	
-	public String getMoveByProbability(int searchdepth, int samplesize){
-		String move = null;
-		expand(searchdepth,samplesize);
-		List<MonteCarloSearchTree> leafs = new ArrayList<MonteCarloSearchTree>();
-		leafs = getAllLeaf(leafs);
 		
-		MonteCarloSearchTree bestresult = this;
-		Map<Integer, Integer> scores = new HashMap<Integer,Integer>();
-		for(MonteCarloSearchTree tree : leafs){
-			if(tree.getScene().getStatus() != "fail" && tree.getDepth()!=0){
-				int index = tree.getFirtsMoveIndex();
-				if(scores.containsKey(index)){
-					int value = scores.get(index);
-					scores.put(index, value+tree.scene.getScore());
-				}else{
-					scores.put(index, tree.scene.getScore());
-				}
-
-			}		
+		while(bestresult.getDepth() != 1&&bestresult.getDepth()!=0){
+			bestresult = bestresult.getParent();
 		}
-		int maxscore = 0;
-		int bestindexofmove = 0;
-		for (Map.Entry<Integer, Integer> entry : scores.entrySet()) {
-			if(entry.getValue()>=maxscore){
-				maxscore = entry.getValue();
-				bestindexofmove = entry.getKey();
-			}
-		}
-		if(maxscore ==this.scene.getScore()){
-			return moveToHuman();
-		}
-		else{
-		move = String.valueOf(this.childrenlist.get(bestindexofmove).getTargetX());
+		
+		move = String.valueOf(bestresult.getX());
 		move += " ";
-		move += String.valueOf(this.childrenlist.get(bestindexofmove).getTargetX());
-		System.out.println("ash`s target: " + move.toString());
+		move += String.valueOf(bestresult.getY());
+		
 		return move;
-		}
 	}
-	
-	
 	
 	private String moveToHuman(){
 		Map<Integer,Human> humanlist =  this.scene.getHumanlist();

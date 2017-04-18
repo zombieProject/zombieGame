@@ -1,77 +1,38 @@
 package game;
 
-import agent.*;
-import game.debug.DebugGraphs;
-import game.debug.EmptyOutputStream;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import agent.Agent;
+import agent.Agents;
+import agent.Ash;
+import agent.Human;
+import agent.Zombie;
 
 public class Scene {
-	private static final int LEFT = 0;
-	private static final int TOP = 0;
+	public static final int LEFT = 0;
+	public static final int TOP = 0;
 	public static final int RIGHT = 16000;
 	public static final int DOWN = 9000;
 	public static final int ZOMBIE_LIMIT = 400;
 	public static final int ASH_LIMIT = 1000;
 	public static final int SHOOTING_RANGE = 2000;
-
-	int score;
-    private String filePath;
-    private String status;
-    
+	
+	private String status;
 	Ash ash;
 	Map<Integer,Zombie> zombielist;
 	Map<Integer,Zombie> zombienextlist;
 	Map<Integer, Human> humanlist;
+	int score;
 	
-	private boolean debugMode = false;
-
-	// debug related information
-	private static PrintStream debugTextDisable = createPrintStream(new EmptyOutputStream());
-	private ByteArrayOutputStream byteArrayOutputStream = null;
-	private PrintStream debugTextEnable = null;
-	private DebugGraphs debugGraphs = new DebugGraphs(this);
-
-	public boolean isDebugMode() {
-		return debugMode;
-	}
-
-	public void setDebugMode(boolean debugMode) {
-		this.debugMode = debugMode;
-		if(!debugMode) return;
-		if(byteArrayOutputStream == null){
-			byteArrayOutputStream = new ByteArrayOutputStream();
-			debugTextEnable = createPrintStream(byteArrayOutputStream);
-		}
-	}
-
-	public PrintStream debugInfo(){
-		if(debugMode) return debugTextEnable;
-		else return debugTextDisable;
-	}
-
-	public DebugGraphs getDebugGraphs() {
-		return debugGraphs;
-	}
-
-	public String getDebugText(){
-		if(byteArrayOutputStream == null) return null;
-		try {
-			return byteArrayOutputStream.toString("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public String getFilePath() {
-        return filePath;
-    }
-
 	public String getStatus(){
 		return status;
 	}
@@ -97,14 +58,11 @@ public class Scene {
 		return humanlist;
 	}
 	
-	
-	// Constructors for Scene
-	
-	// use Scene object as argument
+	public Scene(){
+		
+	}
 	
 	public Scene(Scene s){
-
-	    filePath = s.filePath;
 		score = s.score;
 		ash = new Ash(s.getAsh());
 		
@@ -112,7 +70,7 @@ public class Scene {
 		zombienextlist = new HashMap<Integer,Zombie> ();
 		humanlist = new HashMap<Integer,Human> ();
 		
-		for (Map.Entry<Integer, Zombie> entry : s.getZombielist().entrySet()){
+		for (Map.Entry<Integer, Zombie> entry : s.getZombieNextlist().entrySet()){
 			zombielist.put(entry.getKey(), new Zombie(entry.getValue()));
 		}
 		
@@ -123,56 +81,69 @@ public class Scene {
 		for (Map.Entry<Integer, Human> entry : s.getHumanlist().entrySet()){
 			humanlist.put(entry.getKey(), new Human(entry.getValue()));
 		}
+		zombieMove();
+		
 		status = s.getStatus();
 		
 		
 	}
 
-	// use filepath as argument
-	
 	public Scene(String filepath){
-		
-		// In each file, the first line is Ash's data,
-		//    the second line is Zombie's data,
-		//	  the third line is Human's data.
-		
 		score = 0;
 		zombielist = new HashMap<Integer, Zombie>();
-        zombienextlist = new HashMap<Integer, Zombie>();
 		humanlist = new HashMap<Integer, Human>();
 		status = "ongoing";
-		this.filePath = filepath;
 		try{
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(this.filePath)));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
 			// ash line
-			String input1=br.readLine();
-			input1 = input1.trim().replaceAll("\\s+", "\t" );
-
-			String[] dataa = input1.split("\t");
+			String input=br.readLine();
+			String[] dataa = input.split("\t");
 			this.ash = Agents.makeAsh(Integer.parseInt(dataa[0]), Integer.parseInt(dataa[1]));
 			// zombie line
-			String input2 = br.readLine();
-            input2 = input2.trim().replaceAll("\\s+", "\t" );
-			String[] dataz = input2.split("\t");
+			input = br.readLine();
+			String[] dataz = input.split("\t");
 			for (int i = 0; i < dataz.length; i+=2){
 				zombielist.put(i/2, Agents.makeZombie(Integer.parseInt(dataz[i]), Integer.parseInt(dataz[i+1])));
 			}
 			// human line
-			String input3 = br.readLine();
-            input3 = input3.trim().replaceAll("\\s+", "\t" );
-			String[] datah = input3.split("\t");
+			input = br.readLine();
+			String[] datah = input.split("\t");
 			for (int i = 0; i < datah.length; i+=2){
 				humanlist.put(i/2, Agents.makeHuman(Integer.parseInt(datah[i]), Integer.parseInt(datah[i+1])));
 			}
-
-            // update the zombie next list with the next move for each zombies
-            updateZombieNextMove();
-            br.close();
+			
+			zombienextlist = new HashMap<Integer,Zombie>(zombielist);
+			//close
+			br.close();
 		}
 		catch(IOException e){
 			e.printStackTrace();
 		}
 		
+	}
+	public Scene sceneCopy(){
+		Scene copyscene = new Scene();
+		copyscene.score = this.score;
+		copyscene.ash = new Ash(this.getAsh());
+		
+		copyscene.zombielist = new HashMap<Integer,Zombie> ();
+		copyscene.zombienextlist = new HashMap<Integer,Zombie> ();
+		copyscene.humanlist = new HashMap<Integer,Human> ();
+		
+		for (Map.Entry<Integer, Zombie> entry : this.getZombieNextlist().entrySet()){
+			copyscene.zombielist.put(entry.getKey(), new Zombie(entry.getValue()));
+		}
+		
+		for (Map.Entry<Integer, Zombie> entry : this.getZombieNextlist().entrySet()){
+			copyscene.zombienextlist.put(entry.getKey(), new Zombie(entry.getValue()));
+		}
+		
+		for (Map.Entry<Integer, Human> entry : this.getHumanlist().entrySet()){
+			copyscene.humanlist.put(entry.getKey(), new Human(entry.getValue()));
+		}
+		
+		copyscene.status = this.getStatus();
+		return  copyscene;
 	}
 	
 	public void printScene(){
@@ -185,28 +156,20 @@ public class Scene {
 		return status;
 	}
 	
-	public void nextScene(String ashmove){
-
-	    // Zombie moves to the next location
-	    zombieMove();
-
-	    // Zombies next step locations gets updated based on the current move
-		updateZombieNextMove();
+	public Scene nextScene(String ashmove){
+//		zombieMove();
 		ashMove(ashmove);
 		ashKillZombie();
 		zombieKillHuman();
-		
-		// determine if Ash win the game
-		
 		if(zombienextlist.isEmpty()){
 			status = "pass";
 		}else if(humanlist.isEmpty()){
 			status = "fail";
 		}
+		return this;
 	}
 	
 	public List<Integer> outGameSequence(){
-		
 		List<Integer> sequence = new ArrayList<Integer>();
 		//add ash
 		sequence.add(ash.getX());
@@ -232,26 +195,17 @@ public class Scene {
 	}
 	
 
-	// This method is used to find agent who is in smallest distance
 	
 	private Agent findTarget(Agent a){
-		
 		double distance = Integer.MAX_VALUE;
 		Agent target = new Agent();
-		
 		for (Map.Entry<Integer, Human> entry : humanlist.entrySet()){
 			double d = distance(a.getX(),a.getY(),entry.getValue().getX(),entry.getValue().getY());
 			if (d<distance){
-				
-				// find the smallest distance between Agent a and a human
-				
 				distance = d;
 				target = entry.getValue();
 			}			
 		}
-		
-		// compute the distance between Agent a and Ash
-		
 		if(distance > distance(a.getX(),a.getY(),ash.getX(),ash.getY())){
 			target = ash;
 		}
@@ -268,59 +222,46 @@ public class Scene {
 	}
 	
 	private void zombieMove(){
-        for (Map.Entry<Integer, Zombie> entry : zombielist.entrySet()) {
-        	
-        	// find the target that the zombie will move to
-        	
+		for (Map.Entry<Integer, Zombie> entry : zombienextlist.entrySet()) {  
+//			move(entry.getValue(),500,500);
 			Agent target = findTarget(entry.getValue());
 			move(entry.getValue(),target.getX(),target.getY());
 			
 		}
 	}
-
-	public void updateZombieNextMove() {
-
-	    // Next predicted move will always be based on the first move
-		
-	    HashMap<Integer, Zombie> zombiesNextList = new HashMap<>();
-
-	    // All zombies move together in each turn
-	    
-        for (Map.Entry<Integer, Zombie> entry : zombielist.entrySet()) {
-        	
-            Zombie copyOfZombie = new Zombie(entry.getValue());
-            Agent target = findTarget(copyOfZombie);
-            move(copyOfZombie,target.getX(),target.getY());
-            zombiesNextList.put(entry.getKey(), copyOfZombie);
-        }
-        this.zombienextlist = zombiesNextList;
-    }
-
+	
 	private void move(Agent a, int x, int y){
+//		if(a.isAsh()){
+//			if(distance(a.getX(),a.getY(),x,y) <= ASH_LIMIT){
+//				a.setDestination(x, y);
+//			}
+//			else {
+//				double offsetx = offsetX(ASH_LIMIT,a.getX(),a.getY(),x,y);
+//				double offsety = offsetY(ASH_LIMIT,a.getX(),a.getY(),x,y);
+//				a.setDestination((int)offsetx+a.getX(), (int)offsety+a.getY());
+//				
+//			}
+//		}else{
+//			if(distance(a.getX(),a.getY(),x,y) <= ZOMBIE_LIMIT){
+//				a.setDestination(x, y);	
+//		}else{
+//			double offsetx = offsetX(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
+//			double offsety = offsetY(ZOMBIE_LIMIT,a.getX(),a.getY(),x,y);
+//			a.setDestination((int)offsetx+a.getX(), (int)offsety+a.getY());
+//			}
+//		}
+		
 		int limit;
 
-		// Just Ash and Zombies can make movement
-		
 		if(a.isAsh()) {
-			
-			// Ash moves exact 1000 units
 			limit = ASH_LIMIT;
-			
 		} else {
-			
-			// Zombie moves exact 400 units
 			limit = ZOMBIE_LIMIT;
 		}
 
 		if(distance(a.getX(),a.getY(),x,y) < limit) {
-			
-			// if the distance is smaller than limit, then the agent moves onto target coordination
 			a.setDestination(x, y);
-			
 		} else {
-			
-			// else change agent's coordination
-			
 			double offsetx = offsetX(limit,a.getX(),a.getY(),x,y);
 			if(a.getX()>x){
 				offsetx = -offsetx;
@@ -334,14 +275,12 @@ public class Scene {
 		}
 	}
 	
-	// Helper methods for calculation
 	
 	public double offsetX(int bevel, int x1,int y1, int x2, int y2){
 		if(y1 == y2){
 			return bevel;
-			
 		}else{
-			return bevel*Math.sin(Math.atan((double)(Math.abs(((double)x1-(double)x2)/((double)y1-(double)y2)))));
+		return bevel*Math.sin(Math.atan((double)(Math.abs(((double)x1-(double)x2)/((double)y1-(double)y2)))));
 		}
 	}
 	
@@ -349,7 +288,7 @@ public class Scene {
 		if(y1 == y2){
 			return 0;
 		}else{
-			return bevel*Math.cos(Math.atan((double)(Math.abs(((double)x1-(double)x2)/((double)y1-(double)y2)))));
+		return bevel*Math.cos(Math.atan((double)(Math.abs(((double)x1-(double)x2)/((double)y1-(double)y2)))));
 		}
 	}
 	
@@ -357,22 +296,13 @@ public class Scene {
 		return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 	}
 	
-	
-	// This method calculates scores when Ash kills zombies
-	
 	private void ashKillZombie(){
-		
 		int killcount = 0;
 		int zombieworth = humanlist.size()*10;
 		Map<Integer, Zombie> copyzombienextlist = new HashMap<Integer,Zombie>(zombienextlist);
-		
 		for (Map.Entry<Integer, Zombie> entry : copyzombienextlist.entrySet()){
-			
-			// Ash can kill any zombies in the range of 2000 units
-			
 			if(distance(ash.getX(),ash.getY(),entry.getValue().getX(),entry.getValue().getY())<=SHOOTING_RANGE){
 				zombienextlist.remove(entry.getKey());
-				zombielist.remove(entry.getKey());
 				killcount+=1;
 				score += zombieworth*fibonacci(killcount);
 			}		
@@ -380,27 +310,24 @@ public class Scene {
 	}
 	
 	private void zombieKillHuman(){
-
-		// The human are killed when human and zombies have the same coordination
-		
-	    Map<Integer, Human> humansKilled = new HashMap<>(humanlist);
-
+		Set<Integer> killid= new HashSet<Integer>();
 		for (Map.Entry<Integer, Zombie> entryz : zombienextlist.entrySet()){
-			
-			for (Map.Entry<Integer, Human> entryh : humansKilled.entrySet()){
-				
+			for (Map.Entry<Integer, Human> entryh : humanlist.entrySet()){
 				if(entryz.getValue().getX()==entryh.getValue().getX()&&
 						entryz.getValue().getY()==entryh.getValue().getY()){
-					
-                    humanlist.remove(entryh.getKey());
+					killid.add(entryh.getKey());
 				}
 			}		
-		}
+		}		
+		for (Integer id : killid) {  
+		      if(humanlist.containsKey(id)){
+		    	  humanlist.remove(id);
+		      } 
+		}  
 	}
 	
 	
 	// n>=1,1, 2, 3, 5, 8
-	
 	private int fibonacci(int n){
 		if (n==1){
 			return 1;
@@ -412,10 +339,10 @@ public class Scene {
 	}
 	
 	
-	// Test
+	
 	
 	public static void main(String args[]){
-		Scene s1 = new Scene("testcase/testcase1.txt");
+		Scene s1 = new Scene("testcase/testcase3.txt");
 		s1.printScene();
 //		double a = 8.8;
 		System.out.println(s1.offsetY(400,0,0,0,500));
@@ -428,11 +355,5 @@ public class Scene {
 
 	}
 
-	public static PrintStream createPrintStream(OutputStream outputStream){
-		try {
-			return new PrintStream(outputStream, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
+
 }

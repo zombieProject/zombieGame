@@ -61,8 +61,8 @@ public class Game {
 	
 	
 	//private static final int DEFAULT_STAGE = 1;
-	private static final int DEFAULT_STAGE = 2;
-	//private static final int DEFAULT_STAGE = 3;
+	//private static final int DEFAULT_STAGE = 2;
+	private static final int DEFAULT_STAGE = 3;
 	
 	// can change to any testcases in the testcase
 	
