@@ -1,6 +1,5 @@
 package ai.DecisionTree;
 
-import java.util.function.Supplier;
 
 /**
  * Created by shubhimittal on 4/12/17.
@@ -13,6 +12,7 @@ public class DecisionTree {
     private DecisionTree right;
     private Action actionExecuted;
 
+    // Constructor for DecisionTree
 
     DecisionTree(Node node , DecisionTree left, DecisionTree right ) {
 
@@ -21,6 +21,8 @@ public class DecisionTree {
         this.right = right;
     }
 
+    // Getter
+    
     public Action getActionExecuted() {
         return actionExecuted;
     }
@@ -29,6 +31,8 @@ public class DecisionTree {
 
         Node startNode = node;
 
+        // if startNode is Condition node
+        
         while(startNode.isCondition()) {
               startNode.execute();
 
@@ -40,7 +44,8 @@ public class DecisionTree {
                 startNode = cond.getFalseValue();
              }
         }
-
+        
+        // startNode becoming Action node means this node is the leaf node
         actionExecuted = startNode.asAction();
         actionExecuted.execute();
     }

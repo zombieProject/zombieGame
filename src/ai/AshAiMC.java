@@ -1,7 +1,5 @@
 package ai;
 
-import java.util.List;
-
 import game.Scene;
 import ai.montecarlo.MonteCarloSearchTree;
 
